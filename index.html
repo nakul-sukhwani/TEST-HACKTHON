@@ -422,10 +422,10 @@
 
                 <div>
                     <label class="block text-xs font-bold text-on-surface-variant tracking-widest uppercase mb-1">Severity</label>
-                    <div class="flex gap-2">
-                        <button class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs">LOW</button>
-                        <button class="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-xs shadow-lg">HIGH</button>
-                        <button class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs">CRITICAL</button>
+                    <div id="severity-picker" class="flex gap-2">
+                        <button onclick="setSeverity('LOW')" class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs transition-all hover:bg-slate-100">LOW</button>
+                        <button onclick="setSeverity('HIGH')" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-xs shadow-lg transition-all">HIGH</button>
+                        <button onclick="setSeverity('CRITICAL')" class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs transition-all hover:bg-slate-100">CRITICAL</button>
                     </div>
                 </div>
                 
@@ -725,6 +725,26 @@
     };
     let isHindi = false;
     let activeReports = [];
+    let currentSeverity = "HIGH";
+    let currentCategory = "General";
+
+    function setSeverity(level) {
+        currentSeverity = level;
+        const picker = document.getElementById('severity-picker');
+        picker.querySelectorAll('button').forEach(btn => {
+            if(btn.innerText === level) {
+                btn.className = "flex-1 py-3 bg-primary text-white rounded-xl font-bold text-xs shadow-lg transition-all";
+            } else {
+                btn.className = "flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs transition-all hover:bg-slate-100";
+            }
+        });
+    }
+
+    function toggleSymptom(el) {
+        el.classList.toggle('bg-white');
+        el.classList.toggle('bg-tertiary-container');
+        el.classList.toggle('text-white');
+    }
 
     function decodeJwtResponse(token) {
         let base64Url = token.split('.')[1];
@@ -854,10 +874,13 @@
             document.getElementById('report-step-' + i).classList.add('hidden');
         }
         
-        if (category === 'Food') {
-            document.getElementById('canteen-symptoms').classList.remove('hidden');
-        } else if (category && category !== 'Food') {
-            document.getElementById('canteen-symptoms').classList.add('hidden');
+        if (category) {
+            currentCategory = category;
+            if (category === 'Food') {
+                document.getElementById('canteen-symptoms').classList.remove('hidden');
+            } else {
+                document.getElementById('canteen-symptoms').classList.add('hidden');
+            }
         }
         
         document.getElementById('report-step-' + stepNum).classList.remove('hidden');
@@ -875,8 +898,8 @@
         
         // Using provided key directly in logic for deployment stability
         const apiKey = "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";
-        const reportDesc = document.querySelector('#view-report textarea').value || "General maintenance issue.";
-        const prompt = `Act as a facility triage AI. Analyze this campus facility report: '${reportDesc}'. Give exactly 1 brief sentence assessing the severity and urgency.`;
+        const reportDesc = document.querySelector('#view-report textarea').value || "No detailed description provided.";
+        const prompt = `Act as a facility triage AI. Analyze this campus facility report: Category: ${currentCategory}, Severity selected by user: ${currentSeverity}, Description: '${reportDesc}'. Give exactly 1 brief sentence assessing the severity and urgency.`;
 
         try {
             const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
@@ -963,21 +986,23 @@
 
     function submitReport() {
         const desc = document.querySelector('#view-report textarea').value;
-        const severityBtn = document.querySelector('#view-report .bg-primary'); // Assuming simple toggle
         
         activeReports.push({
             id: `CG-${Math.floor(Math.random()*9000)+1000}`,
-            category: "Campus",
+            category: currentCategory,
             description: desc || "No description provided.",
-            severity: severityBtn ? severityBtn.innerText : "MEDIUM",
+            severity: currentSeverity,
             triage: lastTriageResult || "Pending Analysis",
             reporter: currentUserProfile.name,
             reporterEmail: currentUserProfile.email,
             time: "Just Now"
         });
 
+        // Clear for next time
+        document.querySelector('#view-report textarea').value = "";
+        
         updateAdminQueue();
-        alert("Report Submitted Successfully! Tracking identity: " + currentUserProfile.name);
+        alert("Report Submitted Successfully! Live Tracking ID: " + activeReports[activeReports.length-1].id);
         navigate('wall');
     }
 
