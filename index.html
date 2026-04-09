@@ -369,8 +369,8 @@
                         <span class="material-symbols-outlined absolute inset-0 m-auto w-6 h-6 text-primary">location_on</span>
                     </div>
                     <div>
-                        <h4 class="font-bold text-lg">Engineering Wing</h4>
-                        <p class="text-sm text-slate-500">Block B, Ground Floor</p>
+                        <h4 id="detected-location-title" class="font-bold text-lg">Engineering Wing</h4>
+                        <p id="detected-location-desc" class="text-sm text-slate-500">Block B, Ground Floor</p>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2">
@@ -1115,6 +1115,20 @@
         
         document.getElementById('report-step-' + stepNum).classList.remove('hidden');
         window.scrollTo(0,0);
+
+        if(stepNum === 2) {
+            document.getElementById('detected-location-title').innerText = "Locating nearby node...";
+            document.getElementById('detected-location-desc').innerText = "Requesting GPS Access...";
+            if("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    document.getElementById('detected-location-title').innerText = "Live Coordinates Verified";
+                    document.getElementById('detected-location-desc').innerText = `Lat: ${pos.coords.latitude.toFixed(5)}, Lng: ${pos.coords.longitude.toFixed(5)}`;
+                }, err => {
+                    document.getElementById('detected-location-title').innerText = "Campus Default Premises";
+                    document.getElementById('detected-location-desc').innerText = "Location access denied. Using assigned zone.";
+                });
+            }
+        }
 
         if(stepNum === 4) {
             runNvidiaTriage();
