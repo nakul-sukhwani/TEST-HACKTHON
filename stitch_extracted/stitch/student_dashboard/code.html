@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Sentinel | Student Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#424751",
+                    "on-secondary-fixed": "#171c25",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-container": "#5f6470",
+                    "tertiary-container": "#b1121b",
+                    "secondary": "#595e69",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#bbd0ff",
+                    "tertiary-fixed-dim": "#ffb3ac",
+                    "inverse-primary": "#acc7ff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "primary-container": "#0056b3",
+                    "surface-container-low": "#f3f4f5",
+                    "inverse-surface": "#2e3132",
+                    "on-surface-variant": "#424752",
+                    "outline-variant": "#c2c6d4",
+                    "surface-tint": "#115cb9",
+                    "surface-bright": "#f8f9fa",
+                    "surface-container": "#edeeef",
+                    "tertiary": "#88000e",
+                    "secondary-fixed-dim": "#c2c6d3",
+                    "surface": "#f8f9fa",
+                    "secondary-fixed": "#dee2f0",
+                    "tertiary-fixed": "#ffdad6",
+                    "primary": "#003f87",
+                    "on-primary": "#ffffff",
+                    "secondary-container": "#dee2f0",
+                    "on-tertiary-container": "#ffc0ba",
+                    "on-tertiary-fixed": "#410003",
+                    "on-surface": "#191c1d",
+                    "error": "#ba1a1a",
+                    "surface-container-high": "#e7e8e9",
+                    "primary-fixed": "#d7e2ff",
+                    "primary-fixed-dim": "#acc7ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-primary-fixed-variant": "#004491",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#930010",
+                    "outline": "#727784",
+                    "on-background": "#191c1d",
+                    "on-primary-fixed": "#001a40",
+                    "background": "#f8f9fa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(248, 249, 250, 0.7);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Sidebar (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 z-50 py-4">
+<div class="px-6 mb-8">
+<h1 class="font-headline font-extrabold text-blue-900 dark:text-blue-100 text-2xl tracking-tighter">Clinical Sentinel</h1>
+<p class="text-xs text-slate-500 font-medium mt-1">University Safety Portal</p>
+</div>
+<div class="flex flex-col gap-1 flex-grow">
+<!-- Active Item: Dashboard -->
+<a class="cursor-pointer flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg mx-2 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] text-sm font-medium">Dashboard</span>
+</a>
+<a class="cursor-pointer flex items-center gap-3 p-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="add_a_photo">add_a_photo</span>
+<span class="font-['Inter'] text-sm font-medium">Report Issue</span>
+</a>
+<a class="cursor-pointer flex items-center gap-3 p-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-['Inter'] text-sm font-medium">Heatmap</span>
+</a>
+<a class="cursor-pointer flex items-center gap-3 p-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+<span class="font-['Inter'] text-sm font-medium">Resolution Hub</span>
+</a>
+<a class="cursor-pointer flex items-center gap-3 p-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2 transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="emergency">emergency</span>
+<span class="font-['Inter'] text-sm font-medium">SOS History</span>
+</a>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-tertiary/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency</span>
+                Trigger SOS
+            </button>
+</div>
+<div class="border-t border-slate-200 dark:border-slate-800 pt-4 flex flex-col gap-1">
+<a class="cursor-pointer flex items-center gap-3 p-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-sm font-medium">Settings</span>
+</a>
+<a class="cursor-pointer flex items-center gap-3 p-3 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-['Inter'] text-sm font-medium">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen pb-24 md:pb-8">
+<!-- Top App Bar -->
+<header class="w-full sticky top-0 z-50 bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm dark:shadow-none flex justify-between items-center px-6 py-3">
+<div class="flex items-center gap-4">
+<h2 class="font-headline font-bold tracking-tight text-blue-700 dark:text-blue-400 md:hidden">Sentinel</h2>
+<div class="hidden md:flex items-center gap-2 text-slate-500 font-medium">
+<span>Dashboard</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-blue-700 font-bold">Overview</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/30">
+<span class="material-symbols-outlined text-slate-400 mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48" placeholder="Search facilities..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-slate-500 hover:text-blue-600 transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-blue-600 transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="emergency_home">emergency_home</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="portrait of a young student with a friendly expression in an academic setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbITXOv6lKIYjGeXjPXfNk-yEyZ2a0-YrPmJe2Gx6_bOclGd2Y12RqGftCHJaZnv2WesgiUrd69XRX376eyJgV5uThJTALgD7OcACK1-v_4F_3_fSS_WN-4WUEE8NleVqiEq4gfW4BVY_LV9bWDVl5jTG37xUr00iAcAYG3YoB0VYeANa6ilkwswu7gYHWuXMYmjvShmi8JFQgFuEO745lr0rmrWoR7kX5vMjfyONRFBb1Xzr85mF-RKEWHghU5exPM3mLaA5Mn_c"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="px-6 py-8 max-w-7xl mx-auto space-y-8">
+<!-- Welcome Section -->
+<section class="relative overflow-hidden rounded-3xl bg-primary text-white p-8 md:p-12 shadow-2xl shadow-primary/20">
+<div class="relative z-10 max-w-2xl">
+<h3 class="font-headline text-3xl md:text-5xl font-extrabold tracking-tight mb-4">Welcome back, Alex.</h3>
+<p class="text-on-primary-container text-lg font-medium opacity-90 leading-relaxed">Your campus hygiene and safety are our priority. All systems are currently operational in the Engineering Wing.</p>
+</div>
+<!-- Abstract visual element -->
+<div class="absolute -right-20 -top-20 w-80 h-80 bg-primary-container rounded-full opacity-20 blur-3xl"></div>
+<div class="absolute -right-10 bottom-0 w-64 h-64 bg-blue-400 rounded-full opacity-10 blur-2xl"></div>
+</section>
+<!-- SOS Prominent Area (Empty but ready) -->
+<section class="border-2 border-dashed border-tertiary/20 rounded-3xl p-1 bg-surface-container-low/30 min-h-[100px] flex items-center justify-center group hover:bg-tertiary-container/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-4 text-tertiary opacity-40 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-4xl">warning_amber</span>
+<p class="font-headline font-bold uppercase tracking-widest text-sm">Emergency Alert Area - No Active Alerts</p>
+</div>
+</section>
+<!-- Quick Action Bento Grid -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-headline text-xl font-bold">Report an Issue</h4>
+<span class="text-xs font-bold uppercase tracking-tighter text-slate-400">Select Category</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Washroom -->
+<div class="col-span-1 md:col-span-2 group cursor-pointer bg-surface-container-lowest p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col justify-between min-h-[180px]">
+<div class="flex justify-between items-start">
+<div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-2xl">wc</span>
+</div>
+<span class="material-symbols-outlined text-slate-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+<div>
+<h5 class="font-headline text-xl font-extrabold text-slate-800">Toilet &amp; Washroom</h5>
+<p class="text-xs text-slate-500 font-medium mt-1">Hygiene, plumbing, or supplies</p>
+</div>
+</div>
+<!-- Food -->
+<div class="group cursor-pointer bg-surface-container-lowest p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col justify-between min-h-[180px]">
+<div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-2xl">restaurant</span>
+</div>
+<div>
+<h5 class="font-headline text-lg font-extrabold text-slate-800 leading-tight">Canteen &amp; Food</h5>
+<p class="text-xs text-slate-500 font-medium mt-1">Quality or cleanliness</p>
+</div>
+</div>
+<!-- Water -->
+<div class="group cursor-pointer bg-surface-container-lowest p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col justify-between min-h-[180px]">
+<div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-2xl">water_drop</span>
+</div>
+<div>
+<h5 class="font-headline text-lg font-extrabold text-slate-800 leading-tight">Drinking Water</h5>
+<p class="text-xs text-slate-500 font-medium mt-1">Dispenser maintenance</p>
+</div>
+</div>
+<!-- Lighting -->
+<div class="group cursor-pointer bg-surface-container-lowest p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex flex-col justify-between min-h-[180px]">
+<div class="w-12 h-12 rounded-2xl bg-yellow-50 text-yellow-600 flex items-center justify-center group-hover:bg-yellow-600 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-2xl">lightbulb</span>
+</div>
+<div>
+<h5 class="font-headline text-lg font-extrabold text-slate-800 leading-tight">Lighting</h5>
+<p class="text-xs text-slate-500 font-medium mt-1">Dark zones or outages</p>
+</div>
+</div>
+<!-- Others -->
+<div class="col-span-1 md:col-span-3 group cursor-pointer bg-surface-container-lowest p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 flex items-center gap-6">
+<div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-slate-800 group-hover:text-white transition-colors duration-300">
+<span class="material-symbols-outlined text-2xl">more_horiz</span>
+</div>
+<div>
+<h5 class="font-headline text-xl font-extrabold text-slate-800">Other General Issues</h5>
+<p class="text-sm text-slate-500 font-medium">Anything else that requires campus security or maintenance attention</p>
+</div>
+<div class="ml-auto">
+<span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">add_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- My Reports Section -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Status List -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-[2.5rem] p-8 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h4 class="font-headline text-2xl font-extrabold">My Reports</h4>
+<p class="text-sm text-slate-500 font-medium">Tracking your recent submissions</p>
+</div>
+<button class="text-primary font-bold text-sm hover:underline">View All History</button>
+</div>
+<div class="space-y-4">
+<!-- Report Item 1 -->
+<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center justify-between">
+<h6 class="font-bold text-slate-800">Canteen A - Table Cleanliness</h6>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">2h ago</span>
+</div>
+<p class="text-sm text-slate-500 truncate max-w-md">Leftover trays not cleared in Section B...</p>
+</div>
+<div class="px-3 py-1 bg-tertiary-container/10 text-tertiary rounded-full text-[10px] font-black uppercase tracking-tight">
+                                Under Review
+                            </div>
+</div>
+<!-- Report Item 2 -->
+<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">wc</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center justify-between">
+<h6 class="font-bold text-slate-800">Library 2F - No Soap</h6>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Yesterday</span>
+</div>
+<p class="text-sm text-slate-500 truncate max-w-md">Dispenser empty in the male washroom...</p>
+</div>
+<div class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[10px] font-black uppercase tracking-tight">
+                                Resolved
+                            </div>
+</div>
+<!-- Report Item 3 -->
+<div class="flex items-center gap-4 p-4 rounded-2xl hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center justify-between">
+<h6 class="font-bold text-slate-800">Gym Dispenser - Warm Water</h6>
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">3 days ago</span>
+</div>
+<p class="text-sm text-slate-500 truncate max-w-md">Cooling unit seems to be malfunctioning...</p>
+</div>
+<div class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[10px] font-black uppercase tracking-tight">
+                                Resolved
+                            </div>
+</div>
+</div>
+</div>
+<!-- Stats/Info Card -->
+<div class="bg-slate-900 rounded-[2.5rem] p-8 text-white flex flex-col justify-between overflow-hidden relative">
+<div class="relative z-10">
+<span class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-2 block">Sentinel Analytics</span>
+<h4 class="font-headline text-4xl font-extrabold mb-6 leading-tight">98% <br/><span class="text-lg font-medium opacity-60">Campus Cleanliness</span></h4>
+<div class="space-y-6">
+<div class="flex items-end gap-2">
+<div class="h-12 w-3 bg-blue-500 rounded-full"></div>
+<div class="h-20 w-3 bg-blue-400 rounded-full"></div>
+<div class="h-16 w-3 bg-blue-600 rounded-full"></div>
+<div class="h-24 w-3 bg-white rounded-full"></div>
+<div class="h-14 w-3 bg-blue-400 rounded-full"></div>
+<div class="h-18 w-3 bg-blue-300 rounded-full"></div>
+</div>
+<p class="text-sm font-medium text-slate-400 leading-relaxed">Response time average: <span class="text-white">14 minutes</span> across all sectors today.</p>
+</div>
+</div>
+<button class="relative z-10 w-full mt-8 bg-white/10 hover:bg-white/20 backdrop-blur-md py-4 rounded-2xl font-bold transition-all">
+                        View Campus Map
+                    </button>
+<!-- Abstract glow -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-600 rounded-full blur-3xl opacity-30"></div>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-500 p-2 hover:text-blue-500 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="view_day">view_day</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Feed</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-500 p-2 hover:text-blue-500 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Map</span>
+</a>
+<!-- Active Tab: Report (Assuming user is on dashboard to perform an action) -->
+<a class="flex flex-col items-center bg-blue-600 text-white rounded-2xl p-3 -mt-6 shadow-lg shadow-blue-500/40 transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Report</span>
+</a>
+<a class="flex flex-col items-center text-slate-400 dark:text-slate-500 p-2 hover:text-blue-500 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold mt-1">Alerts</span>
+</a>
+</nav>
+</body></html>

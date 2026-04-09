@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clinical Sentinel - Report Issue</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#424751",
+                        "on-secondary-fixed": "#171c25",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-container": "#5f6470",
+                        "tertiary-container": "#b1121b",
+                        "secondary": "#595e69",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#bbd0ff",
+                        "tertiary-fixed-dim": "#ffb3ac",
+                        "inverse-primary": "#acc7ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-container": "#0056b3",
+                        "surface-container-low": "#f3f4f5",
+                        "inverse-surface": "#2e3132",
+                        "on-surface-variant": "#424752",
+                        "outline-variant": "#c2c6d4",
+                        "surface-tint": "#115cb9",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#edeeef",
+                        "tertiary": "#88000e",
+                        "secondary-fixed-dim": "#c2c6d3",
+                        "surface": "#f8f9fa",
+                        "secondary-fixed": "#dee2f0",
+                        "tertiary-fixed": "#ffdad6",
+                        "primary": "#003f87",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#dee2f0",
+                        "on-tertiary-container": "#ffc0ba",
+                        "on-tertiary-fixed": "#410003",
+                        "on-surface": "#191c1d",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e7e8e9",
+                        "primary-fixed": "#d7e2ff",
+                        "primary-fixed-dim": "#acc7ff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-fixed-variant": "#004491",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "outline": "#727784",
+                        "on-background": "#191c1d",
+                        "on-primary-fixed": "#001a40",
+                        "background": "#f8f9fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .brand-font { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Sidebar Navigation (Desktop) -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-slate-50 border-r border-slate-200 flex-col gap-1 py-4 z-50">
+<div class="px-6 mb-8">
+<h1 class="font-['Manrope'] font-extrabold text-blue-900 text-xl tracking-tighter">Clinical Sentinel</h1>
+<p class="text-[10px] text-slate-500 font-medium tracking-wide">University Safety Portal</p>
+</div>
+<nav class="flex-grow space-y-1">
+<div class="text-slate-600 hover:bg-slate-100 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 hover:translate-x-1 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</div>
+<!-- ACTIVE TAB: Report Issue -->
+<div class="bg-blue-50 text-blue-700 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 hover:translate-x-1 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="add_a_photo">add_a_photo</span>
+<span class="font-medium text-sm">Report Issue</span>
+</div>
+<div class="text-slate-600 hover:bg-slate-100 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 hover:translate-x-1 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-medium text-sm">Heatmap</span>
+</div>
+<div class="text-slate-600 hover:bg-slate-100 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 hover:translate-x-1 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+<span class="font-medium text-sm">Resolution Hub</span>
+</div>
+<div class="text-slate-600 hover:bg-slate-100 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 hover:translate-x-1 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="emergency">emergency</span>
+<span class="font-medium text-sm">SOS History</span>
+</div>
+</nav>
+<div class="mt-auto px-2 space-y-1">
+<div class="text-slate-600 hover:bg-slate-100 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</div>
+<div class="text-slate-600 hover:bg-slate-100 rounded-lg mx-2 cursor-pointer flex items-center gap-3 p-3 transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-medium text-sm">Support</span>
+</div>
+<div class="mx-4 mt-4">
+<button class="w-full bg-tertiary text-white font-bold py-3 rounded-xl shadow-lg shadow-red-200 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency</span>
+                    Trigger SOS
+                </button>
+</div>
+</div>
+</aside>
+<!-- Top App Bar (Mobile & Desktop) -->
+<header class="w-full sticky top-0 z-40 bg-slate-50/70 backdrop-blur-xl shadow-sm md:pl-64">
+<div class="flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-slate-700">menu</span>
+</div>
+<h2 class="text-xl font-black tracking-tighter text-blue-800 md:hidden">Clinical Sentinel</h2>
+<h2 class="hidden md:block font-['Manrope'] font-bold tracking-tight text-slate-800">Report Issue</h2>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-500 cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-slate-500 cursor-pointer" data-icon="emergency_home">emergency_home</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
+<img alt="User Profile Avatar" data-alt="close-up portrait of a professional woman with glasses and dark hair looking confident in an office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWYJP4TLvTV5eZmVaRKJxCp6dP6SylEveqSdI6_jeBIsWXoCDk7Pa71j6T5DGm-_HOJDE2qmqu-TgnE18NMp3vNOBcIizAp_Euaic8oD-owcdwo3OM5XLE00KZinbh50fX5pfyRiHOltWXuqu6aZTECq0Zd8gCBHZonVwlOye0-yjtXEd3Ov2UkI4XOBAWIcr6p3UDe8V19b7GL7zPrWGp4ksU18vC_IHziU6CIVQsfu4O3OGyrPLIp8IyDFMDcOq9_YYomGfTvfU"/>
+</div>
+</div>
+</div>
+<div class="bg-slate-200/50 h-[1px]"></div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:pl-64 pb-24 md:pb-8 min-h-screen">
+<div class="max-w-4xl mx-auto p-6 space-y-8">
+<!-- Step Progress Indicator -->
+<div class="flex justify-between items-center gap-2 mb-8 overflow-hidden rounded-full bg-surface-container-low p-1">
+<div class="flex-1 h-2 bg-primary rounded-full"></div>
+<div class="flex-1 h-2 bg-primary/20 rounded-full"></div>
+<div class="flex-1 h-2 bg-primary/20 rounded-full"></div>
+<div class="flex-1 h-2 bg-primary/20 rounded-full"></div>
+</div>
+<div class="space-y-12">
+<!-- Step 1: Category Selection (The "Bento" approach) -->
+<section>
+<div class="mb-6">
+<h3 class="text-3xl font-['Manrope'] font-extrabold tracking-tight text-on-surface">Category Selection</h3>
+<p class="text-on-surface-variant font-medium mt-1">What kind of issue are you reporting?</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<button class="group p-6 rounded-2xl bg-surface-container-low hover:bg-primary-container hover:text-white transition-all duration-300 text-left flex flex-col gap-4 border-2 border-transparent hover:border-primary">
+<span class="material-symbols-outlined text-3xl text-primary group-hover:text-white" data-icon="wash">wash</span>
+<span class="font-bold tracking-tight">Hygiene</span>
+</button>
+<button class="group p-6 rounded-2xl bg-surface-container-highest border-2 border-primary text-primary transition-all duration-300 text-left flex flex-col gap-4">
+<span class="material-symbols-outlined text-3xl" data-icon="medical_services">medical_services</span>
+<span class="font-bold tracking-tight">Medical Hazard</span>
+</button>
+<button class="group p-6 rounded-2xl bg-surface-container-low hover:bg-primary-container hover:text-white transition-all duration-300 text-left flex flex-col gap-4 border-2 border-transparent hover:border-primary">
+<span class="material-symbols-outlined text-3xl text-primary group-hover:text-white" data-icon="security">security</span>
+<span class="font-bold tracking-tight">Security Alert</span>
+</button>
+<button class="group p-6 rounded-2xl bg-surface-container-low hover:bg-primary-container hover:text-white transition-all duration-300 text-left flex flex-col gap-4 border-2 border-transparent hover:border-primary">
+<span class="material-symbols-outlined text-3xl text-primary group-hover:text-white" data-icon="lightbulb">lightbulb</span>
+<span class="font-bold tracking-tight">Infrastructure</span>
+</button>
+</div>
+</section>
+<!-- Step 2: Location Auto-detection (Asymmetric Map Rule) -->
+<section class="grid md:grid-cols-5 gap-6 items-start">
+<div class="md:col-span-2 space-y-4">
+<h3 class="text-2xl font-['Manrope'] font-bold tracking-tight text-on-surface">Location Verification</h3>
+<p class="text-on-surface-variant">We've pinned your current GPS coordinates. Adjust the marker if necessary.</p>
+<div class="bg-primary/5 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<div>
+<p class="text-xs font-bold text-primary uppercase tracking-wider">Detected Site</p>
+<p class="text-sm font-semibold text-on-surface">Campus Sector 7, Wing B</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-3 h-64 rounded-3xl overflow-hidden relative shadow-inner">
+<img class="w-full h-full object-cover" data-alt="detailed topological map of a modern university campus with highlighted pedestrian zones and building blocks" data-location="University Campus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeaoEbEhLZOP5KV8bJX80VWoD36loE7VZ4RcyNyMHLfmRwjzWyexB470ugkhzD2sS5mlVl3BWOV0veoOAUDfloK0x7OIDU3e-sDrzc_l416qRBAf_fu6bJsLR0SdKn7jyHhp9rphbQjorxRRVBJGrEJfzCr0iFK37a2bR2Q_Nf-cuXcudQrgMNL-YAUpksrIrcmXDu-XQVfUWW0CQnaUueAiEVAHqrzyQ4AzmrtIMzCUYHIeRSY28sbwhIyXa_WiEtRVdXd06rR8Q"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center animate-pulse">
+<div class="w-4 h-4 bg-primary rounded-full shadow-lg border-2 border-white"></div>
+</div>
+</div>
+<div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur p-2 rounded-xl shadow-lg flex gap-2">
+<button class="p-2 hover:bg-slate-100 rounded-lg transition-colors"><span class="material-symbols-outlined text-slate-700" data-icon="add">add</span></button>
+<button class="p-2 hover:bg-slate-100 rounded-lg transition-colors"><span class="material-symbols-outlined text-slate-700" data-icon="remove">remove</span></button>
+</div>
+</div>
+</section>
+<!-- Step 3: Media Upload (Glassmorphism Cards) -->
+<section class="space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="text-2xl font-['Manrope'] font-bold tracking-tight text-on-surface">Media Upload</h3>
+<p class="text-on-surface-variant font-medium">Visual evidence assists our response teams.</p>
+</div>
+<p class="text-xs font-bold text-slate-400 uppercase tracking-widest">2 / 4 Photos</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="aspect-square rounded-3xl overflow-hidden relative group">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="close-up photo of a damaged water pipe in a hallway with visible water leakage on concrete floor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByD87sSjwD6JjjwqsKE8B5y4dALqX_p9y7no0auvI45fqZQ04H3syBf4PjnDv0NwkxoDIDvK-Ni2EPgD5sB6wq9cnQoy1TE3L6Wj93mX1DeNDu31bHuJXhhljtAzzABRUkpDZgnVBvEdjb0uxhLxZza3juBmTIck3dIoGlsv82cp56w2m3NJ_MEnF-cFbXezV4S6DgWWHGSEqLXE0upB56lG73Cj6oeaAECez9lN1kXk1hUy9hMvb9xe9Pm34kNF9KuaMTNdn-2Xc"/>
+<div class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full cursor-pointer shadow-md">
+<span class="material-symbols-outlined text-xs" data-icon="close">close</span>
+</div>
+</div>
+<div class="aspect-square rounded-3xl overflow-hidden relative group">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="blurry long shot of a dimly lit campus parking lot highlighting a flickering street lamp" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACtx23HMaYl83K_ox_I81UODorHKxkh_jen_dOiQqZzCrnnEeDX6SPgsR0M5l67VHJJjTetU_BNMmjvhLURuuxKKSSK-GyWrAIj01lPsHYAYc2plnRvOQ_kXJKbljKi7i0TZj95dKkC5ic5dMZjeBPzncCAE_btWNcD1WIVyoIub2qxJyp69RXfef7ZPLsDujwlhABHnA-Cy5j4SJAiPZvGSFyH7SC5BJKBNELnXOU8C705cgq-Km7FHbKvS91UHQsyv7F9gmNIvE"/>
+<div class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full cursor-pointer shadow-md">
+<span class="material-symbols-outlined text-xs" data-icon="close">close</span>
+</div>
+</div>
+<button class="aspect-square rounded-3xl border-2 border-dashed border-outline-variant bg-surface-container-low hover:bg-surface-container flex flex-col items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-3xl text-outline" data-icon="add_a_photo">add_a_photo</span>
+<span class="text-xs font-bold text-outline">ADD PHOTO</span>
+</button>
+</div>
+</section>
+<!-- Step 4: Severity and Description -->
+<section class="grid md:grid-cols-2 gap-8">
+<div class="space-y-6">
+<h3 class="text-2xl font-['Manrope'] font-bold tracking-tight text-on-surface">Incident Profile</h3>
+<div class="space-y-4">
+<label class="block text-xs font-bold text-on-surface-variant tracking-widest uppercase mb-2">Severity Level</label>
+<div class="flex gap-2">
+<button class="flex-1 py-3 px-4 rounded-xl border border-outline-variant font-bold text-xs hover:bg-surface-container transition-colors">LOW</button>
+<button class="flex-1 py-3 px-4 rounded-xl bg-primary text-white font-bold text-xs shadow-lg shadow-primary/20">MODERATE</button>
+<button class="flex-1 py-3 px-4 rounded-xl border border-outline-variant font-bold text-xs hover:bg-tertiary-container hover:text-white transition-colors">CRITICAL</button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-bold text-on-surface-variant tracking-widest uppercase">Description</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-slate-400 font-medium" placeholder="Describe the issue in detail..." rows="4"></textarea>
+</div>
+</div>
+<!-- Submission Confirmation Module (Glassmorphism CTA) -->
+<div class="bg-surface-container-high/40 backdrop-blur-xl p-8 rounded-3xl border border-white/20 shadow-2xl flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white" data-icon="assignment_turned_in">assignment_turned_in</span>
+</div>
+<h4 class="font-bold text-lg">Final Review</h4>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center gap-2 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-green-600" data-icon="check_circle">check_circle</span>
+                                    Category: Medical Hazard
+                                </li>
+<li class="flex items-center gap-2 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-green-600" data-icon="check_circle">check_circle</span>
+                                    Location: Sector 7, Wing B
+                                </li>
+</ul>
+</div>
+<div class="mt-8">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-white py-4 rounded-2xl font-black tracking-tight text-lg shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all">
+                                SUBMIT REPORT
+                            </button>
+<p class="text-[10px] text-center mt-4 text-on-surface-variant font-bold tracking-widest uppercase">Response time: &lt; 15 mins</p>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 backdrop-blur-2xl border-t border-slate-200/50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+<div class="flex flex-col items-center text-slate-400 p-2 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="view_day">view_day</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Feed</span>
+</div>
+<div class="flex flex-col items-center text-slate-400 p-2 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Map</span>
+</div>
+<!-- ACTIVE TAB: Report -->
+<div class="flex flex-col items-center bg-blue-600 text-white rounded-2xl p-3 -mt-6 shadow-lg shadow-blue-500/40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Report</span>
+</div>
+<div class="flex flex-col items-center text-slate-400 p-2 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<span class="font-['Inter'] text-[10px] uppercase tracking-widest font-bold">Alerts</span>
+</div>
+</nav>
+</body></html>
