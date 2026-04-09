@@ -737,14 +737,23 @@
 
 <script>
     // App State Management
-    let currentUserRole = null; // 'student' or 'admin'
-    let currentUserProfile = {
+    let currentUserRole = localStorage.getItem('CG_Role') || null; // 'student' or 'admin'
+    let currentUserProfile = JSON.parse(localStorage.getItem('CG_Profile')) || {
         name: "Demo User",
         email: "demo@univ.ac.in",
         picture: "https://lh3.googleusercontent.com/a/default-user"
     };
     let isHindi = false;
-    let activeReports = [];
+    let activeReports = JSON.parse(localStorage.getItem('CG_Reports')) || [];
+
+    // Session Persistence
+    window.addEventListener('DOMContentLoaded', () => {
+        if (currentUserRole && currentUserProfile) {
+            document.getElementById('dash-user-name').innerText = currentUserProfile.name.split(' ')[0];
+            document.getElementById('user-avatar').src = currentUserProfile.picture;
+            loginAs(currentUserRole);
+        }
+    });
     let currentSeverity = "LOW";
     let currentCategory = "General";
     let imageUploaded = false;
@@ -993,6 +1002,7 @@
             email: responsePayload.email,
             picture: responsePayload.picture
         };
+        localStorage.setItem('CG_Profile', JSON.stringify(currentUserProfile));
 
         // Update UI
         document.getElementById('dash-user-name').innerText = currentUserProfile.name.split(' ')[0];
@@ -1028,6 +1038,7 @@
 
     function loginAs(role) {
         currentUserRole = role;
+        localStorage.setItem('CG_Role', role);
         
         // Hide login view, show app shell
         document.getElementById('view-login').classList.remove('active');
@@ -1049,6 +1060,9 @@
     }
 
     function logout() {
+        localStorage.removeItem('CG_Role');
+        localStorage.removeItem('CG_Profile');
+        currentUserRole = null;
         document.getElementById('app-shell').classList.add('hidden');
         document.getElementById('view-login').classList.remove('hidden');
         document.getElementById('view-login').classList.add('active');
@@ -1275,6 +1289,7 @@
                 time: "Just Now",
                 image: uploadedImageDataUrl
             });
+            localStorage.setItem('CG_Reports', JSON.stringify(activeReports));
 
             // Reset state for the next report
             document.querySelector('#view-report textarea').value = "";
@@ -1336,6 +1351,7 @@
         if(!selectedCaseId) return alert("Select a case from the queue first!");
         
         activeReports = activeReports.filter(r => r.id !== selectedCaseId);
+        localStorage.setItem('CG_Reports', JSON.stringify(activeReports));
         resolvedCount++;
         
         document.getElementById('resolved-hazards-count').innerText = resolvedCount;
