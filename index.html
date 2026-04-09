@@ -382,15 +382,23 @@
             <div id="report-step-3" class="space-y-4 hidden animate-[fadeIn_0.3s]">
                 <p class="text-on-surface-variant font-medium">3. Media Evidence (Mandatory)</p>
                 <p class="text-xs text-on-surface-variant">Attach a real photo from your camera or gallery. AI-generated images will be rejected.</p>
-                <input type="file" id="image-input" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div id="media-placeholder" class="aspect-square rounded-2xl bg-surface-container flex items-center justify-center border border-outline-variant/50 overflow-hidden">
+                <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
+                <input type="file" id="gallery-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div id="media-placeholder" class="aspect-square rounded-2xl bg-surface-container flex items-center justify-center border border-outline-variant/50 overflow-hidden sm:col-span-1">
                         <span class="material-symbols-outlined text-4xl text-outline">image</span>
                     </div>
-                    <button onclick="document.getElementById('image-input').click()" class="aspect-square rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 flex flex-col items-center justify-center gap-2 transition-all cursor-pointer" aria-label="Upload photo evidence">
-                        <span id="upload-icon" class="material-symbols-outlined text-2xl text-primary">add_a_photo</span>
-                        <span id="upload-text" class="text-[10px] font-bold text-primary">TAKE / CHOOSE PHOTO</span>
-                    </button>
+                    <div class="flex flex-col gap-3 sm:col-span-2 justify-center">
+                        <button onclick="document.getElementById('camera-input').click()" class="h-16 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 flex items-center justify-center gap-2 transition-all cursor-pointer" aria-label="Use Camera">
+                            <span class="material-symbols-outlined text-primary">photo_camera</span>
+                            <span class="text-xs font-bold text-primary">TAKE PHOTO</span>
+                        </button>
+                        <button onclick="document.getElementById('gallery-input').click()" class="h-16 rounded-2xl border-2 border-dashed border-tertiary/30 bg-tertiary/5 hover:bg-tertiary/10 flex items-center justify-center gap-2 transition-all cursor-pointer" aria-label="Upload from Gallery">
+                            <span class="material-symbols-outlined text-tertiary">photo_library</span>
+                            <span class="text-xs font-bold text-tertiary">CHOOSE FROM GALLERY</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="upload-status" class="hidden">
                     <p id="upload-status-text" class="text-[10px] font-bold flex items-center gap-1"></p>
@@ -947,18 +955,10 @@
                 imageUploaded = false;
                 statusText.className = "text-[10px] font-bold flex items-center gap-1 text-red-600 leading-relaxed";
                 statusText.innerHTML = `<span class='material-symbols-outlined text-[16px] text-red-500'>gpp_bad</span> <span>REJECTED: ${rejectionReason}</span>`;
-                document.getElementById('upload-icon').innerText = "error";
-                document.getElementById('upload-icon').className = "material-symbols-outlined text-2xl text-red-500";
-                document.getElementById('upload-text').innerText = "REJECTED";
-                document.getElementById('upload-text').className = "text-[10px] font-bold text-red-500";
             } else {
                 imageUploaded = true;
                 statusText.className = "text-[10px] font-bold flex items-center gap-1 text-green-600 leading-relaxed";
                 statusText.innerHTML = `<span class='material-symbols-outlined text-[14px]'>verified</span> Authenticity Verified — EXIF: ${exif.hasExif ? '✓' : '—'} | Dimensions: ${props.width}×${props.height} | Category Match: ${relevance.confidence}% | File: ${(file.size/1024).toFixed(0)}KB`;
-                document.getElementById('upload-icon').innerText = "check_circle";
-                document.getElementById('upload-icon').className = "material-symbols-outlined text-2xl text-green-600";
-                document.getElementById('upload-text').innerText = "VERIFIED ✓";
-                document.getElementById('upload-text').className = "text-[10px] font-bold text-green-600";
             }
         };
         reader.readAsDataURL(file);
@@ -1277,10 +1277,9 @@
             imageUploaded = false;
             uploadedImageDataUrl = null;
             document.getElementById('media-placeholder').innerHTML = `<span class="material-symbols-outlined text-4xl text-outline">image</span>`;
-            document.getElementById('upload-icon').innerText = "add_a_photo";
-            document.getElementById('upload-text').innerText = "TAKE / CHOOSE PHOTO";
             document.getElementById('upload-status').classList.add('hidden');
-            document.getElementById('image-input').value = '';
+            if(document.getElementById('camera-input')) document.getElementById('camera-input').value = '';
+            if(document.getElementById('gallery-input')) document.getElementById('gallery-input').value = '';
             document.getElementById('char-count').innerText = '0 / 50 characters required';
             document.getElementById('char-count').className = 'text-[10px] font-bold text-error mt-2';
             
