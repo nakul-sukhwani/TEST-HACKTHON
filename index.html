@@ -453,7 +453,7 @@
                     <div class="space-y-2">
                         <div class="flex items-center justify-between gap-6">
                             <span class="text-xs font-semibold">Active Hazards</span>
-                            <span class="px-2 py-0.5 bg-tertiary-container text-white text-[10px] font-bold rounded-full">24</span>
+                            <span id="active-hazards-count" class="px-2 py-0.5 bg-tertiary-container text-white text-[10px] font-bold rounded-full">0</span>
                         </div>
                         <div class="flex items-center justify-between gap-6">
                             <span class="text-xs font-semibold">Resolutions</span>
@@ -462,6 +462,10 @@
                     </div>
                 </div>
             </section>
+            <div id="location-bar" class="bg-primary/10 text-primary px-6 py-2 text-xs font-bold flex justify-between items-center hidden">
+                <span id="current-coords">Locating...</span>
+                <button onclick="updateLocation()" class="underline">Refresh Position</button>
+            </div>
             
             <div class="sticky top-16 z-20 bg-surface-container-low/90 backdrop-blur-md px-6 py-4 flex flex-wrap items-center gap-4 border-b border-outline-variant/10">
                 <select class="bg-surface border-none rounded-full px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-primary">
@@ -469,51 +473,20 @@
                     <option>Engineering (AKTU)</option>
                     <option>Law Wing</option>
                 </select>
-                <div class="flex gap-2 flex-wrap">
-                    <button class="px-4 py-2 bg-primary text-white rounded-full text-xs font-bold shadow-md">All Issues</button>
-                    <button class="px-4 py-2 bg-white text-on-surface-variant rounded-full text-xs font-bold">Sanitation</button>
-                    <button class="px-4 py-2 bg-white text-on-surface-variant rounded-full text-xs font-bold border border-tertiary text-tertiary">Urgent Health</button>
+                <div class="flex gap-1 flex-wrap">
+                    <button onclick="renderWall('All')" id="btn-filter-all" class="px-4 py-2 bg-primary text-white rounded-full text-xs font-bold shadow-md transition-all">All Issues</button>
+                    <button onclick="renderWall('Sanitation')" id="btn-filter-sanitation" class="px-4 py-2 bg-white text-on-surface-variant rounded-full text-xs font-bold transition-all border border-transparent hover:border-slate-200">Sanitation</button>
+                    <button onclick="renderWall('Urgent')" id="btn-filter-urgent" class="px-4 py-2 bg-white text-on-surface-variant rounded-full text-xs font-bold border border-tertiary/30 text-tertiary transition-all hover:bg-tertiary/5">Urgent Health</button>
                 </div>
             </div>
             
             <section class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-surface-container-lowest rounded-[2rem] p-5 shadow-sm border border-transparent hover:border-primary/10 transition-colors flex flex-col sm:flex-row gap-5">
-                        <div class="w-full sm:w-40 h-40 rounded-2xl bg-surface-container shrink-0 overflow-hidden">
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX6bwacfF5rXf15FU2fYLrDfI-ZwmW-3z4WWyJo-cfL91IiMD-bJdmgUNla4ftRK4wRawd9d5BAp37F-1QoSL4tXMdM0a2w8pfi50nJc0PgMzjmOxi2yCR0M1tNWA08Hfou30DO0kyh8ItfUrcGAaZHxHuxkyirj-MpEFebjrF6HbJb1pivUXKpmG1GFHcBqwZ6EYySZ26SRJjlJyL-XKlDohUZkKMFqsgBo_yiG4hWpbTm1TnSV0MGzXaOsD9MmcRCItqwjMNhQM" class="object-cover w-full h-full grayscale hover:grayscale-0 transition-all"/>
-                        </div>
-                        <div class="flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-black uppercase tracking-widest rounded-full">Critical</span>
-                                    <span class="text-[10px] font-bold text-outline">Student #A1B2C</span>
-                                </div>
-                                <h3 class="text-lg font-bold text-on-surface mb-1">Water Leakage</h3>
-                                <p class="text-xs text-on-surface-variant line-clamp-2">Science Block B, 2nd Floor Corridor. Ceiling panels sagging posing hazard.</p>
-                            </div>
-                            <div class="flex items-center justify-between border-t border-outline-variant/10 pt-3 mt-3">
-                                <span class="text-xs font-bold text-tertiary"><span class="material-symbols-outlined text-[14px] align-middle">schedule</span> Elapsed: 42h</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-surface-container-lowest rounded-[2rem] p-5 shadow-sm border border-transparent flex flex-col sm:flex-row gap-5">
-                        <div class="w-full sm:w-40 h-40 rounded-2xl bg-surface-container shrink-0 overflow-hidden relative">
-                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTmyCuzpuUzJ4xgkQgZAqH8BI-7uE-6Yt1283mVxmQ-Hhqm7qrOcXn5fo9EU5I6YdivTlD2NKtNbKS8Y2c5OkQ09m0iuFkKTjxPkSNs_kLCzTAIBzjizZRUS-vXJrrsnd01PTfbjVbadPaYm-9fM05SDtkBicvA5caMg3gRS9N-BQpKjNfaghrH8b_PGYVH1p6HP_s2rCO_Q8TI7rguNdQ2Ga_uId7N0VqNdfXbqsDdM6WHXL1RO5dolHu3INMdI5QdaQlJdQTcGA" class="object-cover w-full h-full"/>
-                            <div class="absolute inset-x-0 bottom-0 bg-primary/80 py-1 text-center"><span class="text-[10px] text-white font-bold uppercase tracking-widest">After photo</span></div>
-                        </div>
-                        <div class="flex flex-col justify-between w-full">
-                            <div>
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="px-2 py-0.5 bg-primary-fixed text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Resolved</span>
-                                </div>
-                                <h3 class="text-lg font-bold text-on-surface mb-1">Sanitation: Restroom 4A</h3>
-                                <p class="text-xs text-on-surface-variant line-clamp-2">Arts Faculty main restroom deep cleaning and plumbing audit complete.</p>
-                            </div>
-                            <div class="flex items-center justify-between border-t border-outline-variant/10 pt-3 mt-3">
-                                <span class="text-xs font-bold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> Fixed in 6h 12m</span>
-                            </div>
-                        </div>
+                <div id="wall-reports-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Dynamic Reports Will Appear Here -->
+                    <div id="empty-wall-state" class="col-span-full py-20 text-center space-y-4">
+                        <span class="material-symbols-outlined text-6xl text-slate-200">dashboard_customize</span>
+                        <p class="text-slate-400 font-medium">No active reports in this quadrant.<br/>Systems are clear.</p>
+                        <button onclick="navigate('report')" class="text-primary font-bold text-sm underline">Raise First Alert</button>
                     </div>
                 </div>
             </section>
@@ -724,6 +697,18 @@
     // App State Management
     let currentUserRole = null; // 'student' or 'admin'
     let isHindi = false;
+    let activeReports = [];
+
+    function updateLocation() {
+        if ("geolocation" in navigator) {
+            document.getElementById('location-bar').classList.remove('hidden');
+            navigator.geolocation.getCurrentPosition((position) => {
+                document.getElementById('current-coords').innerText = `Current Node: ${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)} (Verified)`;
+            }, () => {
+                document.getElementById('current-coords').innerText = "Location access denied. Using Campus HQ Default.";
+            });
+        }
+    }
 
     function showAIModal() { document.getElementById('ai-modal').classList.remove('hidden'); }
     function saveAIConfig() { document.getElementById('ai-modal').classList.add('hidden'); alert('API Keys cached successfully for session.'); }
@@ -787,6 +772,11 @@
         // Show target view
         document.getElementById('view-' + viewId).classList.add('active');
 
+        if(viewId === 'wall') {
+            renderWall();
+            updateLocation();
+        }
+
         // Update active state in sidebar (excluding login)
         document.querySelectorAll('[id^="nav-btn-"]').forEach(btn => {
             if(btn.id === 'nav-btn-' + viewId || (viewId==='wall' && btn.id==='nav-btn-wall-admin')) {
@@ -825,13 +815,15 @@
         }
     }
 
+    let lastTriageResult = "";
     async function runNvidiaTriage() {
         document.getElementById('ai-result').classList.add('hidden');
         document.getElementById('ai-loading').classList.remove('hidden');
         
         // Using provided key directly in logic for deployment stability
         const apiKey = "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";
-        const prompt = "Act as a facility triage AI. Analyze this campus facility report: 'Water pooling, ceiling damage in Science Block B.' Give exactly 1 brief sentence assessing the severity and urgency.";
+        const reportDesc = document.querySelector('#view-report textarea').value || "General maintenance issue.";
+        const prompt = `Act as a facility triage AI. Analyze this campus facility report: '${reportDesc}'. Give exactly 1 brief sentence assessing the severity and urgency.`;
 
         try {
             const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
@@ -851,11 +843,13 @@
             if (!response.ok) throw new Error("API Response Error");
             
             const data = await response.json();
-            document.getElementById('ai-result-text').innerHTML = `<strong>Severity Assessment:</strong> ${data.choices[0].message.content}`;
+            lastTriageResult = data.choices[0].message.content;
+            document.getElementById('ai-result-text').innerHTML = `<strong>Severity Assessment:</strong> ${lastTriageResult}`;
             
             document.getElementById('ai-loading').classList.add('hidden');
             document.getElementById('ai-result').classList.remove('hidden');
         } catch (e) {
+            lastTriageResult = "Manual review required.";
             document.getElementById('ai-result-text').innerText = "AI Triage is currently unavailable (Status: Offline). Using fallback manual triage.";
             console.error("AI Error:", e);
             document.getElementById('ai-loading').classList.add('hidden');
@@ -863,9 +857,70 @@
         }
     }
 
+    function renderWall(filter = 'All') {
+        const grid = document.getElementById('wall-reports-grid');
+        const emptyState = document.getElementById('empty-wall-state');
+        
+        // Update Button UI
+        document.querySelectorAll('[id^="btn-filter-"]').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white', 'shadow-md');
+            btn.classList.add('bg-white', 'text-on-surface-variant');
+        });
+        document.getElementById(`btn-filter-${filter.toLowerCase()}`).classList.add('bg-primary', 'text-white', 'shadow-md');
+
+        let filtered = activeReports;
+        if(filter === 'Sanitation') filtered = activeReports.filter(r => r.category !== 'Food');
+        if(filter === 'Urgent') filtered = activeReports.filter(r => r.severity === 'CRITICAL' || r.severity === 'HIGH');
+
+        if(filtered.length === 0) {
+            emptyState.classList.remove('hidden');
+            // Keep old report visual for "All" if user wants to see their raised ones
+            grid.querySelectorAll('.dynamic-card').forEach(c => c.remove());
+        } else {
+            emptyState.classList.add('hidden');
+            grid.querySelectorAll('.dynamic-card').forEach(c => c.remove());
+            
+            filtered.forEach(r => {
+                const card = document.createElement('div');
+                card.className = "dynamic-card bg-surface-container-lowest rounded-[2rem] p-5 shadow-sm border border-transparent hover:border-primary/10 transition-colors flex flex-col sm:flex-row gap-5 animate-[fadeIn_0.3s]";
+                card.innerHTML = `
+                    <div class="w-full sm:w-40 h-40 rounded-2xl bg-slate-100 shrink-0 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-slate-300">image</span>
+                    </div>
+                    <div class="flex flex-col justify-between w-full">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 ${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-black uppercase tracking-widest rounded-full">${r.severity}</span>
+                                <span class="text-[10px] font-bold text-outline">Student #CG-${Math.floor(Math.random()*9000)+1000}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-on-surface mb-1">${r.category} Issue</h3>
+                            <p class="text-xs text-on-surface-variant line-clamp-2">${r.description}</p>
+                            <p class="text-[9px] mt-2 text-purple-600 font-bold italic">AI Verdict: ${r.triage}</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-outline-variant/10 pt-3 mt-3">
+                            <span class="text-xs font-bold text-primary"><span class="material-symbols-outlined text-[14px] align-middle">schedule</span> Just Now</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        document.getElementById('active-hazards-count').innerText = activeReports.length;
+    }
+
     function submitReport() {
-        alert("Report Submitted Successfully! Auto-routing to Administration.");
-        navigate('dashboard');
+        const desc = document.querySelector('#view-report textarea').value;
+        const severityBtn = document.querySelector('#view-report .bg-primary'); // Assuming simple toggle
+        
+        activeReports.push({
+            category: "Campus",
+            description: desc || "No description provided.",
+            severity: severityBtn ? severityBtn.innerText : "MEDIUM",
+            triage: lastTriageResult || "Pending Analysis"
+        });
+
+        alert("Report Submitted Successfully! Auto-routing to Wall.");
+        navigate('wall');
     }
 </script>
 </body>
