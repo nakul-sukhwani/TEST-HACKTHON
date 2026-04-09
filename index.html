@@ -479,7 +479,7 @@
                         </div>
                         <div class="flex items-center justify-between gap-6">
                             <span class="text-xs font-semibold">Resolutions</span>
-                            <span class="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full">142</span>
+                            <span id="resolved-hazards-count" class="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full">142</span>
                         </div>
                     </div>
                 </div>
@@ -612,8 +612,8 @@
                             </div>
                             
                             <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-surface-container">
-                                <button class="flex-1 bg-gradient-to-r from-primary to-primary-container text-white py-3 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
-                                    <span class="material-symbols-outlined text-[18px]">engineering</span> Assign Contractor
+                                <button onclick="resolveSelectedCase()" class="flex-1 bg-gradient-to-r from-primary to-primary-container text-white py-3 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
+                                    <span class="material-symbols-outlined text-[18px]">done_all</span> Mark Resolved
                                 </button>
                                 <button class="flex-1 bg-surface-container-highest text-on-surface py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-surface-dim transition-colors">
                                     <span class="material-symbols-outlined text-[18px]">cloud_upload</span> Upload Proof
@@ -1008,12 +1008,40 @@
         });
     }
 
+    let selectedCaseId = null;
+    let resolvedCount = 142;
+
     function selectCase(report) {
+        selectedCaseId = report.id;
         document.getElementById('reporter-name-display').innerText = report.reporter;
         document.getElementById('reporter-email-display').innerText = report.reporterEmail;
         document.querySelector('#view-admin h3.font-headline.text-2xl').innerText = `Case Details: #${report.id}`;
         document.querySelector('#view-admin p.text-on-surface-variant.text-sm').innerText = `${report.category} Hazard`;
         document.querySelector('#view-admin div.bg-surface-container-low.p-4.rounded-xl.h-full.border-l-2').innerText = report.description;
+    }
+
+    function resolveSelectedCase() {
+        if(!selectedCaseId) return alert("Select a case from the queue first!");
+        
+        activeReports = activeReports.filter(r => r.id !== selectedCaseId);
+        resolvedCount++;
+        
+        document.getElementById('resolved-hazards-count').innerText = resolvedCount;
+        document.getElementById('active-hazards-count').innerText = activeReports.length;
+
+        // Update Stats in Admin View
+        document.querySelector('#view-admin section div span.font-headline').innerText = activeReports.length;
+
+        updateAdminQueue();
+        
+        // Reset Details View
+        selectedCaseId = null;
+        document.getElementById('reporter-name-display').innerText = "Awaiting Selection";
+        document.getElementById('reporter-email-display').innerText = "Click a case in the queue";
+        document.querySelector('#view-admin h3.font-headline.text-2xl').innerText = "Case Details";
+        document.querySelector('#view-admin div.bg-surface-container-low.p-4.rounded-xl.h-full.border-l-2').innerText = "Select a case to view details.";
+
+        alert("Case resolved and moved to resolution database!");
     }
 </script>
 </body>
