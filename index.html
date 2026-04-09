@@ -390,7 +390,7 @@
                         <span class="material-symbols-outlined text-4xl text-outline">image</span>
                     </div>
                     <div class="flex flex-col gap-3 sm:col-span-2 justify-center">
-                        <button onclick="document.getElementById('camera-input').click()" class="h-16 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 flex items-center justify-center gap-2 transition-all cursor-pointer" aria-label="Use Camera">
+                        <button onclick="openCameraModal()" class="h-16 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 flex items-center justify-center gap-2 transition-all cursor-pointer" aria-label="Use Camera">
                             <span class="material-symbols-outlined text-primary">photo_camera</span>
                             <span class="text-xs font-bold text-primary">TAKE PHOTO</span>
                         </button>
@@ -1351,6 +1351,79 @@
 
         alert("Case resolved and moved to resolution database!");
     }
+
+    // === WebRTC Camera Modal Implementation ===
+    let videoStream = null;
+
+    async function openCameraModal() {
+        // If mobile device, fallback to native camera input (it works fine there)
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            document.getElementById('camera-input').click();
+            return;
+        }
+
+        document.getElementById('camera-modal').classList.remove('hidden');
+        document.getElementById('camera-modal').classList.add('flex');
+        const video = document.getElementById('camera-video');
+        
+        try {
+            videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            video.srcObject = videoStream;
+        } catch (err) {
+            alert("Camera access denied or unavailable. Please use the 'Choose from Gallery' option.");
+            closeCameraModal();
+        }
+    }
+
+    function closeCameraModal() {
+        const modal = document.getElementById('camera-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+            videoStream = null;
+        }
+    }
+
+    function capturePhoto() {
+        const video = document.getElementById('camera-video');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        // Convert canvas image to a Blob
+        canvas.toBlob((blob) => {
+            const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+            
+            // Create a spoofed event object to pass to handleImageUpload
+            const event = { target: { files: [file] } };
+            
+            closeCameraModal();
+            handleImageUpload(event);
+        }, 'image/jpeg', 0.9);
+    }
 </script>
+
+<!-- Camera Modal Overlay -->
+<div id="camera-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex-col items-center justify-center p-4">
+    <div class="relative w-full max-w-lg bg-surface-container rounded-2xl overflow-hidden shadow-2xl">
+        <div class="p-4 bg-surface flex justify-between items-center">
+            <h3 class="font-headline font-bold text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-primary">photo_camera</span> Capture Evidence</h3>
+            <button onclick="closeCameraModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-variant hover:bg-red-100 hover:text-red-600 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="relative bg-black aspect-[4/3] flex items-center justify-center">
+            <video id="camera-video" class="w-full h-full object-cover" autoplay playsinline></video>
+        </div>
+        <div class="p-6 bg-surface flex justify-center">
+            <button onclick="capturePhoto()" class="w-16 h-16 rounded-full bg-primary text-white shadow-lg flex items-center justify-center border-4 border-primary-container hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-3xl">camera</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
