@@ -11,6 +11,7 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -115,7 +116,28 @@
             </div>
             
             <div class="pt-6 border-t border-outline-variant/30 space-y-4">
-                <p class="text-xs font-bold text-on-surface-variant text-center uppercase tracking-widest">Demo Access</p>
+                <p class="text-xs font-bold text-on-surface-variant text-center uppercase tracking-widest">Secure Access</p>
+                
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+                     data-callback="onGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin w-full flex justify-center"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-shape="pill"
+                     data-logo_alignment="left">
+                </div>
+
+                <div class="flex items-center gap-2 my-4">
+                    <div class="h-px bg-outline-variant/30 flex-1"></div>
+                    <span class="text-[10px] font-bold text-outline uppercase tracking-widest">or demo login</span>
+                    <div class="h-px bg-outline-variant/30 flex-1"></div>
+                </div>
+
                 <button onclick="loginAs('student')" class="w-full bg-primary text-white py-4 rounded-xl flex items-center justify-center gap-2 font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
                     <span class="material-symbols-outlined text-sm">person</span>
                     Student Dashboard
@@ -563,14 +585,14 @@
                             </div>
                         </div>
                         <div class="p-6 space-y-6">
-                            <div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
+                            <div id="admin-case-reporter" class="flex items-center gap-4 p-4 bg-surface-container-low rounded-xl">
                                 <div class="w-10 h-10 bg-slate-300 rounded-full flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-white">person</span>
                                 </div>
                                 <div>
                                     <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Reported By</p>
-                                    <h5 class="font-headline font-bold text-primary">Dr. Julian Vance</h5>
-                                    <p class="text-xs text-on-surface-variant">Faculty Member</p>
+                                    <h5 id="reporter-name-display" class="font-headline font-bold text-primary">Awaiting Selection</h5>
+                                    <p id="reporter-email-display" class="text-xs text-on-surface-variant">Click a case in the queue</p>
                                 </div>
                             </div>
                             
@@ -696,8 +718,39 @@
 <script>
     // App State Management
     let currentUserRole = null; // 'student' or 'admin'
+    let currentUserProfile = {
+        name: "Demo User",
+        email: "demo@univ.ac.in",
+        picture: "https://lh3.googleusercontent.com/a/default-user"
+    };
     let isHindi = false;
     let activeReports = [];
+
+    function decodeJwtResponse(token) {
+        let base64Url = token.split('.')[1];
+        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
+    function onGoogleSignIn(response) {
+        const responsePayload = decodeJwtResponse(response.credential);
+        
+        currentUserProfile = {
+            name: responsePayload.name,
+            email: responsePayload.email,
+            picture: responsePayload.picture
+        };
+
+        // Update UI
+        document.getElementById('dash-user-name').innerText = currentUserProfile.name.split(' ')[0];
+        document.getElementById('user-avatar').src = currentUserProfile.picture;
+
+        // Route based on domain or just student for demo
+        loginAs('student');
+    }
 
     function updateLocation() {
         if ("geolocation" in navigator) {
@@ -913,14 +966,54 @@
         const severityBtn = document.querySelector('#view-report .bg-primary'); // Assuming simple toggle
         
         activeReports.push({
+            id: `CG-${Math.floor(Math.random()*9000)+1000}`,
             category: "Campus",
             description: desc || "No description provided.",
             severity: severityBtn ? severityBtn.innerText : "MEDIUM",
-            triage: lastTriageResult || "Pending Analysis"
+            triage: lastTriageResult || "Pending Analysis",
+            reporter: currentUserProfile.name,
+            reporterEmail: currentUserProfile.email,
+            time: "Just Now"
         });
 
-        alert("Report Submitted Successfully! Auto-routing to Wall.");
+        updateAdminQueue();
+        alert("Report Submitted Successfully! Tracking identity: " + currentUserProfile.name);
         navigate('wall');
+    }
+
+    function updateAdminQueue() {
+        const queue = document.querySelector('#view-admin section div.lg\\:col-span-5');
+        // Clear children except title
+        const title = queue.querySelector('h3');
+        queue.innerHTML = '';
+        queue.appendChild(title);
+
+        activeReports.forEach(r => {
+            const item = document.createElement('div');
+            item.className = "bg-surface-container-low rounded-xl p-4 cursor-pointer border hover:border-primary/30 transition-colors animate-[fadeIn_0.3s]";
+            item.onclick = () => selectCase(r);
+            item.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-bold px-2 py-0.5 rounded uppercase">${r.severity}</span>
+                    <span class="text-[10px] font-mono text-secondary">#${r.id}</span>
+                </div>
+                <h4 class="font-headline font-bold text-on-surface">${r.category} Hazard</h4>
+                <p class="text-sm text-on-surface-variant line-clamp-1">${r.description}</p>
+                <div class="mt-2 flex items-center justify-between text-[10px] font-bold text-secondary uppercase">
+                    <span>${r.reporter}</span>
+                    <span>${r.time}</span>
+                </div>
+            `;
+            queue.appendChild(item);
+        });
+    }
+
+    function selectCase(report) {
+        document.getElementById('reporter-name-display').innerText = report.reporter;
+        document.getElementById('reporter-email-display').innerText = report.reporterEmail;
+        document.querySelector('#view-admin h3.font-headline.text-2xl').innerText = `Case Details: #${report.id}`;
+        document.querySelector('#view-admin p.text-on-surface-variant.text-sm').innerText = `${report.category} Hazard`;
+        document.querySelector('#view-admin div.bg-surface-container-low.p-4.rounded-xl.h-full.border-l-2').innerText = report.description;
     }
 </script>
 </body>
