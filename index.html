@@ -930,25 +930,15 @@
             const relevance = await checkCategoryRelevance(currentCategory, uploadedImageDataUrl);
             await new Promise(r => setTimeout(r, 800));
 
-            // === DECISION ENGINE ===
+            // === DECISION ENGINE: Vision AI Priority ===
             scanEl.classList.add('hidden');
             statusDiv.classList.remove('hidden');
 
-            // Rule 1: JPEG without EXIF = downloaded from internet
-            if(file.type === 'image/jpeg' && !exif.hasExif) {
-                rejectionReason = `Web Image Detected — ${exif.reason}. Real camera photos contain EXIF metadata. This image was likely downloaded from Pinterest/Google.`;
-            }
-            // Rule 2: PNG files are almost never from cameras
-            else if(file.type === 'image/png' && file.size < 500000) {
-                rejectionReason = "PNG format detected — screenshots, AI art, and web images use PNG. Real camera photos use JPEG/HEIC.";
-            }
-            // Rule 3: Suspicious dimensions (pixel art, social media, wallpapers)
-            else if(props.suspicious && !exif.hasExif) {
-                rejectionReason = `Suspicious image properties: ${props.flags.join(', ')}. This does not look like a real camera photograph.`;
-            }
-            // Rule 4: AI Vision detected wrong content
-            else if(!relevance.relevant) {
-                rejectionReason = `Content Mismatch — AI detected: "${relevance.reason}" (Confidence: ${relevance.confidence}%). This does not match the "${currentCategory}" category. Upload a relevant photo.`;
+            // WebRTC captures and Web images strip EXIF/change dimensions.
+            // We now rely purely on the Vision AI to determine if the content is correct.
+            if (!relevance.relevant) {
+                // If the user uploaded a photo of themselves, the AI will accurately tell them that.
+                rejectionReason = `AI detected: "${relevance.reason}". This does not match the "${currentCategory}" category. Please upload an appropriate photo.`;
             }
 
             if(rejectionReason) {
