@@ -799,26 +799,41 @@
         });
     }
 
-    // === LAYER 3: NVIDIA AI Category Relevance Check ===
-    async function checkCategoryRelevance(category) {
+    // === LAYER 3: NVIDIA VISION AI — Actual Image Content Analysis ===
+    // Resize image to small thumbnail for API payload
+    function resizeImageForAI(dataUrl, maxSize) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if(w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                else { w = Math.round(w * maxSize / h); h = maxSize; }
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+            };
+            img.src = dataUrl;
+        });
+    }
+
+    async function checkCategoryRelevance(category, imageDataUrl) {
         const apiKey = "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";
         
-        // We describe the expected content for the category and ask AI to confirm
         const categoryDescriptions = {
-            "Hygiene": "washroom, toilet, bathroom, dirty floor, broken tap, unclean surfaces, sewage, mold",
-            "Food": "canteen food, mess hall, kitchen, spoiled food, unhygienic cooking, dining area, contaminated meal",
-            "Water": "water tap, water cooler, water tank, leaking pipe, no water, dirty water, drainage",
-            "Other": "campus infrastructure, broken furniture, electrical hazard, construction debris, safety hazard",
-            "General": "any campus facility issue, infrastructure problem, maintenance concern"
+            "Hygiene": "a washroom, toilet, bathroom, dirty floor, broken tap, unclean surfaces, sewage, mold, or sanitation issue",
+            "Food": "canteen food, mess hall, kitchen, spoiled or contaminated food, unhygienic cooking area, or dining issue",
+            "Water": "a water tap, water cooler, water tank, leaking pipe, no water supply, dirty water, or drainage problem",
+            "Other": "campus infrastructure damage, broken furniture, electrical hazard, construction debris, or safety hazard",
+            "General": "any campus facility issue or maintenance concern"
         };
-
         const expected = categoryDescriptions[category] || categoryDescriptions["General"];
-        const prompt = `You are a strict image-category validator for a campus safety app. The user selected category "${category}". Expected image content: ${expected}. 
 
-A user has uploaded an image. Based on probabilistic analysis, determine if a random image from the internet (like a meme, aesthetic photo, digital art, pixel art, cartoon, or unrelated photograph) would match the category "${category}".
+        // Resize to 384px for API efficiency
+        const smallImage = await resizeImageForAI(imageDataUrl, 384);
 
-Reply with ONLY a JSON object: {"relevant": true/false, "confidence": 0-100, "reason": "one sentence explanation"}. If the category is very specific (like Food or Water), be STRICT. Default to false if uncertain.`;
-
+        // Try NVIDIA Vision model first (multimodal)
         try {
             const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
                 method: 'POST',
@@ -828,22 +843,46 @@ Reply with ONLY a JSON object: {"relevant": true/false, "confidence": 0-100, "re
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: "meta/llama-3.1-8b-instruct",
-                    messages: [{"role": "user", "content": prompt}],
+                    model: "meta/llama-3.2-11b-vision-instruct",
+                    messages: [{
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": `You are a strict image validator for a campus safety app. The user selected complaint category: "${category}". Expected content: ${expected}.\n\nLook at this image VERY carefully. What do you ACTUALLY see in it?\n\nRules:\n- If you see math notes, homework, selfies, memes, cartoons, landscapes, animals, or ANYTHING unrelated to "${category}" then REJECT it.\n- Only approve if the image CLEARLY shows something related to ${expected}.\n- Be VERY strict. When in doubt, reject.\n\nReply with ONLY this JSON: {"match": true_or_false, "detected": "what you actually see in one sentence", "confidence": number_0_to_100}`
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": smallImage}
+                            }
+                        ]
+                    }],
                     temperature: 0.1,
-                    max_tokens: 100
+                    max_tokens: 150
                 })
             });
-            if (!response.ok) throw new Error("API error");
+
+            if (!response.ok) throw new Error("Vision API " + response.status);
             const data = await response.json();
             const text = data.choices[0].message.content;
-            // Try to parse JSON from response
-            const match = text.match(/\{[\s\S]*?\}/);
-            if(match) return JSON.parse(match[0]);
-            return { relevant: false, confidence: 0, reason: "Could not parse AI response" };
-        } catch(e) {
-            console.error("Category check error:", e);
-            return { relevant: true, confidence: 50, reason: "AI verification unavailable, proceeding with caution" };
+            console.log("Vision AI Response:", text);
+            const jsonMatch = text.match(/\{[\s\S]*?\}/);
+            if(jsonMatch) {
+                const parsed = JSON.parse(jsonMatch[0]);
+                return {
+                    relevant: parsed.match === true,
+                    confidence: parsed.confidence || 0,
+                    reason: parsed.detected || "Unknown content",
+                    model: "vision"
+                };
+            }
+            const isPositive = text.toLowerCase().includes('"match": true') || text.toLowerCase().includes("approved");
+            return { relevant: isPositive, confidence: isPositive ? 80 : 10, reason: text.substring(0, 100), model: "vision" };
+
+        } catch(visionError) {
+            console.warn("Vision model unavailable, falling back to strict rejection:", visionError);
+            // FALLBACK: Default to REJECT since we cannot see the image
+            return { relevant: false, confidence: 10, reason: "Vision AI could not verify image content matches '" + category + "'. Please ensure you upload a photo directly related to your complaint.", model: "fallback" };
         }
     }
 
@@ -878,9 +917,9 @@ Reply with ONLY a JSON object: {"relevant": true/false, "confidence": 0-100, "re
             const props = await analyzeImageProperties(uploadedImageDataUrl);
             await new Promise(r => setTimeout(r, 1000));
 
-            // --- LAYER 3: NVIDIA AI Category Check ---
-            scanText.innerText = `Layer 3/3: NVIDIA Sentinel verifying relevance to "${currentCategory}"...`;
-            const relevance = await checkCategoryRelevance(currentCategory);
+            // --- LAYER 3: NVIDIA Vision AI — Image Content Analysis ---
+            scanText.innerText = `Layer 3/3: NVIDIA Vision analyzing image content for "${currentCategory}"...`;
+            const relevance = await checkCategoryRelevance(currentCategory, uploadedImageDataUrl);
             await new Promise(r => setTimeout(r, 800));
 
             // === DECISION ENGINE ===
@@ -899,9 +938,9 @@ Reply with ONLY a JSON object: {"relevant": true/false, "confidence": 0-100, "re
             else if(props.suspicious && !exif.hasExif) {
                 rejectionReason = `Suspicious image properties: ${props.flags.join(', ')}. This does not look like a real camera photograph.`;
             }
-            // Rule 4: AI says image category doesn't match
-            else if(!relevance.relevant && relevance.confidence < 50) {
-                rejectionReason = `Category Mismatch — AI Confidence: ${relevance.confidence}%. ${relevance.reason}`;
+            // Rule 4: AI Vision detected wrong content
+            else if(!relevance.relevant) {
+                rejectionReason = `Content Mismatch — AI detected: "${relevance.reason}" (Confidence: ${relevance.confidence}%). This does not match the "${currentCategory}" category. Upload a relevant photo.`;
             }
 
             if(rejectionReason) {
