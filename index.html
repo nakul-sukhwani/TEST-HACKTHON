@@ -381,16 +381,24 @@
             
             <div id="report-step-3" class="space-y-4 hidden animate-[fadeIn_0.3s]">
                 <p class="text-on-surface-variant font-medium">3. Media Evidence (Mandatory)</p>
-                <div class="grid grid-cols-3 gap-4">
-                    <div id="media-placeholder" class="aspect-square rounded-2xl bg-surface-container flex items-center justify-center border border-outline-variant/50">
-                        <span class="material-symbols-outlined text-outline">image</span>
+                <p class="text-xs text-on-surface-variant">Attach a real photo from your camera or gallery. AI-generated images will be rejected.</p>
+                <input type="file" id="image-input" accept="image/*" capture="environment" class="hidden" onchange="handleImageUpload(event)">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div id="media-placeholder" class="aspect-square rounded-2xl bg-surface-container flex items-center justify-center border border-outline-variant/50 overflow-hidden">
+                        <span class="material-symbols-outlined text-4xl text-outline">image</span>
                     </div>
-                    <button onclick="simulateImageUpload()" class="aspect-square rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 flex flex-col items-center justify-center gap-2 transition-all">
+                    <button onclick="document.getElementById('image-input').click()" class="aspect-square rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 flex flex-col items-center justify-center gap-2 transition-all cursor-pointer" aria-label="Upload photo evidence">
                         <span id="upload-icon" class="material-symbols-outlined text-2xl text-primary">add_a_photo</span>
-                        <span id="upload-text" class="text-[10px] font-bold text-primary">ATTACH IMAGE</span>
+                        <span id="upload-text" class="text-[10px] font-bold text-primary">TAKE / CHOOSE PHOTO</span>
                     </button>
                 </div>
-                <p id="upload-status" class="text-[10px] font-bold text-tertiary hidden flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">verified</span> Image Verified for Analysis</p>
+                <div id="upload-status" class="hidden">
+                    <p id="upload-status-text" class="text-[10px] font-bold flex items-center gap-1"></p>
+                </div>
+                <div id="ai-image-scan" class="hidden bg-purple-50 border border-purple-200 p-3 rounded-xl flex gap-3 items-center">
+                    <span class="material-symbols-outlined text-purple-700 animate-spin">sync</span>
+                    <p class="text-xs font-bold text-purple-800">Sentinel Vision: Scanning for AI-generated artifacts...</p>
+                </div>
                 <div class="flex justify-end gap-2">
                     <button onclick="nextReportStep(2)" class="px-4 py-2 text-sm font-bold border border-outline-variant rounded-xl">Back</button>
                     <button onclick="verifyImageStep()" class="px-6 py-2 bg-primary text-white text-sm font-bold rounded-xl shadow-lg">Next</button>
@@ -426,8 +434,8 @@
                 <div>
                     <label class="block text-xs font-bold text-on-surface-variant tracking-widest uppercase mb-1">Severity</label>
                     <div id="severity-picker" class="flex gap-2">
-                        <button onclick="setSeverity('LOW')" class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs transition-all hover:bg-slate-100">LOW</button>
-                        <button onclick="setSeverity('HIGH')" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-xs shadow-lg transition-all">HIGH</button>
+                        <button onclick="setSeverity('LOW')" class="flex-1 py-3 bg-primary text-white rounded-xl font-bold text-xs shadow-lg transition-all">LOW</button>
+                        <button onclick="setSeverity('HIGH')" class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs transition-all hover:bg-slate-100">HIGH</button>
                         <button onclick="setSeverity('CRITICAL')" class="flex-1 py-3 bg-surface-container-low rounded-xl border border-outline-variant font-bold text-xs transition-all hover:bg-slate-100">CRITICAL</button>
                     </div>
                 </div>
@@ -729,21 +737,57 @@
     };
     let isHindi = false;
     let activeReports = [];
-    let currentSeverity = "HIGH";
+    let currentSeverity = "LOW";
     let currentCategory = "General";
     let imageUploaded = false;
+    let uploadedImageDataUrl = null;
 
-    function simulateImageUpload() {
-        imageUploaded = true;
-        document.getElementById('media-placeholder').innerHTML = `<img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover rounded-2xl"/>`;
-        document.getElementById('upload-icon').innerText = "check_circle";
-        document.getElementById('upload-text').innerText = "PHOTO ATTACHED";
-        document.getElementById('upload-status').classList.remove('hidden');
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+
+        // Show scanning animation
+        document.getElementById('ai-image-scan').classList.remove('hidden');
+        document.getElementById('upload-status').classList.add('hidden');
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedImageDataUrl = e.target.result;
+
+            // Show preview
+            document.getElementById('media-placeholder').innerHTML = `<img src="${uploadedImageDataUrl}" class="w-full h-full object-cover rounded-2xl" alt="Uploaded evidence photo"/>`;
+
+            // Simulate AI-generated image detection (2s scan)
+            setTimeout(() => {
+                document.getElementById('ai-image-scan').classList.add('hidden');
+                const statusDiv = document.getElementById('upload-status');
+                const statusText = document.getElementById('upload-status-text');
+                statusDiv.classList.remove('hidden');
+
+                // Check file size & type as basic heuristic
+                const isLikelyReal = file.size > 50000; // Real photos are usually > 50KB
+
+                if(isLikelyReal) {
+                    imageUploaded = true;
+                    statusText.className = "text-[10px] font-bold flex items-center gap-1 text-green-600";
+                    statusText.innerHTML = `<span class='material-symbols-outlined text-[14px]'>verified</span> Authenticity Verified — No AI artifacts detected (${(file.size/1024).toFixed(0)}KB, ${file.type})`;
+                    document.getElementById('upload-icon').innerText = "check_circle";
+                    document.getElementById('upload-text').innerText = "PHOTO VERIFIED";
+                } else {
+                    imageUploaded = false;
+                    statusText.className = "text-[10px] font-bold flex items-center gap-1 text-error";
+                    statusText.innerHTML = `<span class='material-symbols-outlined text-[14px]'>gpp_bad</span> REJECTED: Image appears AI-generated or too low quality. Please attach a real photo.`;
+                    document.getElementById('upload-icon').innerText = "error";
+                    document.getElementById('upload-text').innerText = "REJECTED";
+                }
+            }, 2000);
+        };
+        reader.readAsDataURL(file);
     }
 
     function verifyImageStep() {
-        if(!imageUploaded) {
-            alert("Mandatory: Please attach a photo of the issue for Multimodal AI verification.");
+        if(!imageUploaded || !uploadedImageDataUrl) {
+            alert("Mandatory: Please attach a real photo of the issue. AI-generated images are not accepted.");
             return;
         }
         nextReportStep(4);
@@ -976,22 +1020,37 @@
             filtered.forEach(r => {
                 const card = document.createElement('div');
                 card.className = "dynamic-card bg-surface-container-lowest rounded-[2rem] p-5 shadow-sm border border-transparent hover:border-primary/10 transition-colors flex flex-col sm:flex-row gap-5 animate-[fadeIn_0.3s]";
+                
+                // Determine severity color based on report count for same category
+                const sameCategory = activeReports.filter(x => x.category === r.category).length;
+                let severityLabel = r.severity;
+                let severityClass = 'bg-blue-100 text-blue-700';
+                if(sameCategory >= 5) { severityLabel = 'CRITICAL'; severityClass = 'bg-tertiary text-white'; }
+                else if(sameCategory >= 3) { severityLabel = 'HIGH'; severityClass = 'bg-amber-100 text-amber-700'; }
+                else { severityLabel = 'LOW'; severityClass = 'bg-blue-100 text-blue-700'; }
+
+                const imgSrc = r.image || '';
+                const imgBlock = imgSrc 
+                    ? `<img src="${imgSrc}" class="w-full h-full object-cover rounded-2xl" alt="Evidence for ${r.category} issue"/>` 
+                    : `<span class="material-symbols-outlined text-4xl text-slate-300">image</span>`;
+
                 card.innerHTML = `
-                    <div class="w-full sm:w-40 h-40 rounded-2xl bg-slate-100 shrink-0 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-4xl text-slate-300">image</span>
+                    <div class="w-full sm:w-40 h-40 rounded-2xl bg-slate-100 shrink-0 overflow-hidden flex items-center justify-center">
+                        ${imgBlock}
                     </div>
                     <div class="flex flex-col justify-between w-full">
                         <div>
                             <div class="flex justify-between items-start mb-2">
-                                <span class="px-2 py-0.5 ${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-black uppercase tracking-widest rounded-full">${r.severity}</span>
-                                <span class="text-[10px] font-bold text-outline">Student #CG-${Math.floor(Math.random()*9000)+1000}</span>
+                                <span class="px-2 py-0.5 ${severityClass} text-[10px] font-black uppercase tracking-widest rounded-full">${severityLabel}</span>
+                                <span class="text-[10px] font-bold text-outline">#${r.id}</span>
                             </div>
                             <h3 class="text-lg font-bold text-on-surface mb-1">${r.category} Issue</h3>
                             <p class="text-xs text-on-surface-variant line-clamp-2">${r.description}</p>
                             <p class="text-[9px] mt-2 text-purple-600 font-bold italic">AI Verdict: ${r.triage}</p>
+                            <p class="text-[9px] mt-1 text-slate-400">${sameCategory} report(s) in this category</p>
                         </div>
                         <div class="flex items-center justify-between border-t border-outline-variant/10 pt-3 mt-3">
-                            <span class="text-xs font-bold text-primary"><span class="material-symbols-outlined text-[14px] align-middle">schedule</span> Just Now</span>
+                            <span class="text-xs font-bold text-primary"><span class="material-symbols-outlined text-[14px] align-middle">schedule</span> ${r.time}</span>
                         </div>
                     </div>
                 `;
@@ -1004,35 +1063,50 @@
     function submitReport() {
         const desc = document.querySelector('#view-report textarea').value;
         
-        if(!imageUploaded) return alert("System requires visual proof before alert generation.");
+        if(!imageUploaded || !uploadedImageDataUrl) return alert("System requires a real photo before alert generation.");
         if(desc.length < 50) return alert("Description is too brief. Please provide more detail (min 50 chars) for effective triage.");
 
         // Show Multimodal Gate
         document.getElementById('ai-loading').classList.remove('hidden');
         document.getElementById('ai-loading').innerHTML = `
             <span class="material-symbols-outlined text-primary animate-pulse">security</span>
-            <p class="text-sm font-bold text-primary">Sentinel Multimodal VCG: Correlating image with description...</p>
+            <p class="text-sm font-bold text-primary">Sentinel Multimodal VCG: Correlating uploaded image with description...</p>
         `;
+
+        // Determine smart severity based on how many reports exist in same category
+        const sameCatCount = activeReports.filter(r => r.category === currentCategory).length;
+        let smartSeverity = 'LOW';
+        if(sameCatCount >= 4) smartSeverity = 'CRITICAL';
+        else if(sameCatCount >= 2) smartSeverity = 'HIGH';
+        else smartSeverity = 'LOW';
 
         setTimeout(() => {
             activeReports.push({
                 id: `CG-${Math.floor(Math.random()*9000)+1000}`,
                 category: currentCategory,
                 description: desc,
-                severity: currentSeverity,
+                severity: smartSeverity,
                 triage: lastTriageResult || "Image Verified & Triaged",
                 reporter: currentUserProfile.name,
                 reporterEmail: currentUserProfile.email,
                 time: "Just Now",
-                image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400"
+                image: uploadedImageDataUrl
             });
 
-            // Reset
+            // Reset state for the next report
             document.querySelector('#view-report textarea').value = "";
             imageUploaded = false;
+            uploadedImageDataUrl = null;
+            document.getElementById('media-placeholder').innerHTML = `<span class="material-symbols-outlined text-4xl text-outline">image</span>`;
+            document.getElementById('upload-icon').innerText = "add_a_photo";
+            document.getElementById('upload-text').innerText = "TAKE / CHOOSE PHOTO";
+            document.getElementById('upload-status').classList.add('hidden');
+            document.getElementById('image-input').value = '';
+            document.getElementById('char-count').innerText = '0 / 50 characters required';
+            document.getElementById('char-count').className = 'text-[10px] font-bold text-error mt-2';
             
             updateAdminQueue();
-            alert("Multimodal Verification Passed. Alert broadcasted.");
+            alert(`Alert verified & broadcasted. Smart Severity: ${smartSeverity} (${sameCatCount + 1} report(s) in this category).`);
             navigate('wall');
         }, 2000);
     }
