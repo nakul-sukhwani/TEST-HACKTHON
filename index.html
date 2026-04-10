@@ -11,7 +11,7 @@
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer onerror="console.warn('Google GSI failed to load — demo login still works.')"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -690,8 +690,8 @@
 </div>
 
 <script>
-    // App State Management
-    let currentUserRole = localStorage.getItem('CG_Role') || null; // 'student' or 'admin'
+    // ===== GLOBAL STATE =====
+    let currentUserRole = localStorage.getItem('CG_Role') || null;
     let currentUserProfile = JSON.parse(localStorage.getItem('CG_Profile')) || {
         name: "Demo User",
         email: "demo@univ.ac.in",
@@ -699,8 +699,73 @@
     };
     let isHindi = false;
     let activeReports = JSON.parse(localStorage.getItem('CG_Reports')) || [];
+    let currentSeverity = "LOW";
+    let currentCategory = "General";
+    let imageUploaded = false;
+    let uploadedImageDataUrl = null;
 
-    // Session Persistence
+    // ===== CORE NAVIGATION (defined early so buttons always work) =====
+    function loginAs(role) {
+        currentUserRole = role;
+        localStorage.setItem('CG_Role', role);
+
+        document.getElementById('view-login').classList.remove('active');
+        document.getElementById('view-login').classList.add('hidden');
+        document.getElementById('app-shell').classList.remove('hidden');
+
+        if (role === 'student') {
+            document.getElementById('nav-student').classList.remove('hidden');
+            document.getElementById('nav-student').classList.add('flex');
+            const firstName = currentUserProfile.name ? currentUserProfile.name.split(' ')[0] : 'Student';
+            document.getElementById('dash-user-name').innerText = firstName;
+            navigate('dashboard');
+        } else {
+            document.getElementById('nav-admin').classList.remove('hidden');
+            document.getElementById('nav-admin').classList.add('flex');
+            navigate('admin');
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('CG_Role');
+        localStorage.removeItem('CG_Profile');
+        currentUserRole = null;
+        document.getElementById('app-shell').classList.add('hidden');
+        document.getElementById('view-login').classList.remove('hidden');
+        document.getElementById('view-login').classList.add('active');
+        document.getElementById('nav-student').classList.add('hidden');
+        document.getElementById('nav-student').classList.remove('flex');
+        document.getElementById('nav-admin').classList.add('hidden');
+        document.getElementById('nav-admin').classList.remove('flex');
+    }
+
+    function navigate(viewId) {
+        document.querySelectorAll('.tab-content').forEach(v => {
+            if (v.id !== 'view-login') v.classList.remove('active');
+        });
+
+        if (viewId === 'report') nextReportStep(1);
+
+        const target = document.getElementById('view-' + viewId);
+        if (target) target.classList.add('active');
+
+        if (viewId === 'admin') updateAdminQueue();
+        if (viewId === 'dashboard') renderDashboardReports();
+        if (viewId === 'wall') { renderWall(); updateLocation(); }
+
+        document.querySelectorAll('[id^="nav-btn-"]').forEach(btn => {
+            if (btn.id === 'nav-btn-' + viewId || (viewId === 'wall' && btn.id === 'nav-btn-wall-admin')) {
+                btn.classList.add('bg-blue-50', 'text-blue-700');
+                btn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+            } else {
+                btn.classList.remove('bg-blue-50', 'text-blue-700');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            }
+        });
+        window.scrollTo(0, 0);
+    }
+
+    // Session restore on page load
     window.addEventListener('DOMContentLoaded', () => {
         if (currentUserRole && currentUserProfile) {
             document.getElementById('dash-user-name').innerText = currentUserProfile.name.split(' ')[0];
@@ -708,10 +773,6 @@
             loginAs(currentUserRole);
         }
     });
-    let currentSeverity = "LOW";
-    let currentCategory = "General";
-    let imageUploaded = false;
-    let uploadedImageDataUrl = null;
 
     // === LAYER 1: EXIF Metadata Scanner ===
     // Real camera photos ALWAYS contain EXIF (0xFFE1). Downloaded/AI/Pinterest images are stripped.
@@ -990,41 +1051,6 @@
         }
     }
 
-    function loginAs(role) {
-        currentUserRole = role;
-        localStorage.setItem('CG_Role', role);
-        
-        // Hide login view, show app shell
-        document.getElementById('view-login').classList.remove('active');
-        document.getElementById('view-login').classList.add('hidden');
-        document.getElementById('app-shell').classList.remove('hidden');
-        
-        // Setup navigation based on role
-        if(role === 'student') {
-            document.getElementById('nav-student').classList.remove('hidden');
-            document.getElementById('nav-student').classList.add('flex');
-            document.getElementById('dash-user-name').innerText = "Nakul";
-            navigate('dashboard');
-        } else {
-            document.getElementById('nav-admin').classList.remove('hidden');
-            document.getElementById('nav-admin').classList.add('flex');
-            document.getElementById('user-avatar').src = "https://lh3.googleusercontent.com/aida-public/AB6AXuBuxpwVZ2WHPy2mBI1eWCPuFiGpTYHaWQhQYCws4_KetSxOop0NUyBOiL1N2unG2m3jRc7qrcJtsLVdvOFvtFMthcjnw7K6pMlGdtiU3E7w9xoefQ4Wgz6QTh5xtKquEA6N2Nb3LDEZVvk7Q-_zodsk--uVzzuCy0xEjS3Z2yuBYJ_FNJgGPuU94bbJZ7_rsupXHgn1igsFFubSzohHxV8oepzFK0eijMyae2e7WLZax7f2RA0MBsus00WeVQNYIVYBVeCenp_g5UM";
-            navigate('admin');
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem('CG_Role');
-        localStorage.removeItem('CG_Profile');
-        currentUserRole = null;
-        document.getElementById('app-shell').classList.add('hidden');
-        document.getElementById('view-login').classList.remove('hidden');
-        document.getElementById('view-login').classList.add('active');
-        document.getElementById('nav-student').classList.add('hidden');
-        document.getElementById('nav-student').classList.remove('flex');
-        document.getElementById('nav-admin').classList.add('hidden');
-        document.getElementById('nav-admin').classList.remove('flex');
-    }
 
     function renderDashboardReports() {
         const list = document.getElementById('dashboard-my-reports-list');
@@ -1074,48 +1100,6 @@
         });
     }
 
-    function navigate(viewId) {
-        // Hide all views
-        const views = document.querySelectorAll('.tab-content');
-        views.forEach(v => {
-            if(v.id !== 'view-login') {
-                v.classList.remove('active');
-            }
-        });
-        
-        // Reset report wizard
-        if(viewId === 'report') {
-            nextReportStep(1);
-        }
-
-        // Show target view
-        document.getElementById('view-' + viewId).classList.add('active');
-
-        if(viewId === 'admin') {
-            updateAdminQueue();
-        }
-
-        if(viewId === 'dashboard') {
-            renderDashboardReports();
-        }
-
-        if(viewId === 'wall') {
-            renderWall();
-            updateLocation();
-        }
-
-        // Update active state in sidebar (excluding login)
-        document.querySelectorAll('[id^="nav-btn-"]').forEach(btn => {
-            if(btn.id === 'nav-btn-' + viewId || (viewId==='wall' && btn.id==='nav-btn-wall-admin')) {
-                btn.classList.add('bg-blue-50', 'text-blue-700');
-                btn.classList.remove('text-slate-600', 'hover:bg-slate-100');
-            } else {
-                btn.classList.remove('bg-blue-50', 'text-blue-700');
-                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
-            }
-        });
-        window.scrollTo(0,0);
-    }
 
     function showSOSPulsing() {
         document.getElementById('sos-modal').classList.remove('hidden');
