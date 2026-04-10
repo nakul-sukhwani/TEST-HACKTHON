@@ -285,33 +285,8 @@
                             <p class="text-sm text-slate-500 font-medium">Tracking your recent submissions</p>
                         </div>
                     </div>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low group">
-                            <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined">restaurant</span>
-                            </div>
-                            <div class="flex-grow">
-                                <div class="flex items-center justify-between">
-                                    <h6 class="font-bold text-slate-800">Canteen A Cleanliness</h6>
-                                    <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">2h ago</span>
-                                </div>
-                                <p class="text-sm text-slate-500 truncate max-w-sm">Grease stained utensils found in Section B.</p>
-                            </div>
-                            <div class="px-3 py-1 bg-tertiary-container/10 text-tertiary rounded-full text-[10px] font-black uppercase tracking-tight">Under Review</div>
-                        </div>
-                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low">
-                            <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined">wc</span>
-                            </div>
-                            <div class="flex-grow">
-                                <div class="flex items-center justify-between">
-                                    <h6 class="font-bold text-slate-800">Library 2F - No Soap</h6>
-                                    <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Yesterday</span>
-                                </div>
-                                <p class="text-sm text-slate-500 truncate max-w-sm">Dispenser empty.</p>
-                            </div>
-                            <div class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[10px] font-black uppercase tracking-tight">Resolved</div>
-                        </div>
+                    <div id="dashboard-my-reports-list" class="space-y-4">
+                        <!-- Dynamic reports generated via JS -->
                     </div>
                 </div>
                 
@@ -570,29 +545,8 @@
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-headline text-lg font-bold">Unreviewed Queue</h3>
                     </div>
-                    
-                    <div class="bg-tertiary-container/10 border-l-4 border-tertiary rounded-r-xl p-4 cursor-pointer shadow-sm relative group overflow-hidden">
-                        <div class="absolute inset-0 bg-tertiary/5 w-0 group-hover:w-full transition-all duration-500"></div>
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="bg-tertiary text-on-tertiary text-[10px] font-bold px-2 py-0.5 rounded uppercase">High Severity</span>
-                                <span class="text-[10px] font-mono text-secondary">#CG-9842</span>
-                            </div>
-                            <h4 class="font-headline font-bold text-on-surface">Biohazard Spill: Lab 402 <span class="ml-2 bg-red-100/80 text-red-700 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full border border-red-200 align-middle">AI Sentiment: Urgent Panic</span></h4>
-                            <p class="text-sm text-on-surface-variant line-clamp-1">Broken chemical container reported.</p>
-                            <div class="mt-4 flex items-center gap-4 text-[10px] font-bold text-secondary uppercase">
-                                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 12 mins ago</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-surface-container-low rounded-xl p-4 cursor-pointer border hover:border-primary/30 transition-colors">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="bg-primary-fixed text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase">Medium</span>
-                            <span class="text-[10px] font-mono text-secondary">#CG-9841</span>
-                        </div>
-                        <h4 class="font-headline font-bold text-on-surface">Broken Lighting: Parking Lot</h4>
-                        <p class="text-sm text-on-surface-variant line-clamp-1">Section 4 street lamp flickering.</p>
+                    <div id="admin-queue-list" class="space-y-4">
+                        <div class="p-6 text-center text-sm text-slate-500">Queue is empty.</div>
                     </div>
                 </section>
                 
@@ -600,8 +554,8 @@
                     <div class="bg-surface-container-lowest rounded-2xl shadow-lg border border-outline-variant/20 overflow-hidden">
                         <div class="p-6 border-b border-surface-container flex justify-between items-start">
                             <div>
-                                <h3 class="font-headline text-2xl font-extrabold tracking-tight">Case Details: #CG-9842</h3>
-                                <p class="text-on-surface-variant text-sm">Biohazard Spill, Science Hall</p>
+                                <h3 id="admin-case-title" class="font-headline text-2xl font-extrabold tracking-tight">Case Details</h3>
+                                <p id="admin-case-subtitle" class="text-on-surface-variant text-sm">Select a case to view details.</p>
                             </div>
                         </div>
                         <div class="p-6 space-y-6">
@@ -619,14 +573,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Photo Proof</p>
-                                    <div class="aspect-video bg-slate-200 rounded-xl overflow-hidden relative">
-                                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkXcnnNaZVTBHCaEmoEQ5IC4TZY8fgzZlWuU0KOBB-RbaDXk-b7TQthzFpNZBh2-crhG3oYiPoJYktJCUryPCdoePBWQPuoKweazq_eRvrfEb3PslReGJAq64MBpn2Ym9xz_hed1zZWmYQGadWWormEoTy0zeoleqU8Rs2rOuhPbkJU3xx6PWBwGCqouQet4TcpCEH50toQgRq3dL41F8-U5dWu7nSlAAW0mKhWVUyH2NAnBsm41fdf4fhrNxghPzmNpBRzu0fB-Q" class="w-full h-full object-cover"/>
+                                    <div id="admin-photo-container" class="aspect-video bg-slate-200 rounded-xl overflow-hidden relative flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-4xl text-slate-400">image</span>
                                     </div>
                                 </div>
                                 <div class="space-y-2">
                                     <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Description</p>
-                                    <div class="bg-surface-container-low p-4 rounded-xl h-full border-l-2 border-primary text-sm leading-relaxed">
-                                        "Spill is contained within immediate area but fumes are present. Evacuated."
+                                    <div id="admin-case-description" class="bg-surface-container-low p-4 rounded-xl h-full border-l-2 border-primary text-sm leading-relaxed">
+                                        Select a case to view descriptions.
                                     </div>
                                 </div>
                             </div>
@@ -1072,6 +1026,54 @@
         document.getElementById('nav-admin').classList.remove('flex');
     }
 
+    function renderDashboardReports() {
+        const list = document.getElementById('dashboard-my-reports-list');
+        if(!list) return;
+        
+        const myReports = activeReports.filter(r => r.reporterEmail === currentUserProfile.email);
+        
+        list.innerHTML = '';
+        if(myReports.length === 0) {
+            list.innerHTML = `<div class="p-6 text-center text-sm text-slate-500">No reports submitted yet.</div>`;
+            return;
+        }
+
+        // Show newest first
+        myReports.slice().reverse().forEach(r => {
+            const item = document.createElement('div');
+            item.className = "flex items-center gap-4 p-4 rounded-2xl bg-surface-container-low group";
+            
+            let icon = 'help';
+            let colorClass = 'bg-slate-100 text-slate-700';
+            
+            if(r.category === 'Food') { icon = 'restaurant'; colorClass = 'bg-orange-100 text-orange-700'; }
+            else if(r.category === 'Hygiene') { icon = 'wc'; colorClass = 'bg-blue-100 text-blue-700'; }
+            else if(r.category === 'Water') { icon = 'water_drop'; colorClass = 'bg-cyan-100 text-cyan-700'; }
+
+            let status = 'Under Review';
+            let statusClass = 'bg-tertiary-container/10 text-tertiary';
+            if (r.severity === 'LOW') {
+                status = 'Logged';
+                statusClass = 'bg-primary-fixed text-on-primary-fixed-variant';
+            }
+            
+            item.innerHTML = \`
+                <div class="w-12 h-12 rounded-xl \${colorClass} flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined">\${icon}</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between">
+                        <h6 class="font-bold text-slate-800">\${r.category} Issue</h6>
+                        <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">\${r.time}</span>
+                    </div>
+                    <p class="text-sm text-slate-500 truncate max-w-sm">\${r.description}</p>
+                </div>
+                <div class="px-3 py-1 \${statusClass} rounded-full text-[10px] font-black uppercase tracking-tight">\${status}</div>
+            \`;
+            list.appendChild(item);
+        });
+    }
+
     function navigate(viewId) {
         // Hide all views
         const views = document.querySelectorAll('.tab-content');
@@ -1088,6 +1090,14 @@
 
         // Show target view
         document.getElementById('view-' + viewId).classList.add('active');
+
+        if(viewId === 'admin') {
+            updateAdminQueue();
+        }
+
+        if(viewId === 'dashboard') {
+            renderDashboardReports();
+        }
 
         if(viewId === 'wall') {
             renderWall();
@@ -1309,28 +1319,31 @@
     }
 
     function updateAdminQueue() {
-        const queue = document.querySelector('#view-admin section div.lg\\:col-span-5');
-        // Clear children except title
-        const title = queue.querySelector('h3');
+        const queue = document.getElementById('admin-queue-list');
+        if(!queue) return;
         queue.innerHTML = '';
-        queue.appendChild(title);
+        
+        if (activeReports.length === 0) {
+            queue.innerHTML = `<div class="p-6 text-center text-sm text-slate-500">Queue is empty.</div>`;
+            return;
+        }
 
         activeReports.forEach(r => {
             const item = document.createElement('div');
             item.className = "bg-surface-container-low rounded-xl p-4 cursor-pointer border hover:border-primary/30 transition-colors animate-[fadeIn_0.3s]";
             item.onclick = () => selectCase(r);
-            item.innerHTML = `
+            item.innerHTML = \`
                 <div class="flex justify-between items-start mb-2">
-                    <span class="${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-bold px-2 py-0.5 rounded uppercase">${r.severity}</span>
-                    <span class="text-[10px] font-mono text-secondary">#${r.id}</span>
+                    <span class="\${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-bold px-2 py-0.5 rounded uppercase">\${r.severity}</span>
+                    <span class="text-[10px] font-mono text-secondary">#\${r.id}</span>
                 </div>
-                <h4 class="font-headline font-bold text-on-surface">${r.category} Hazard</h4>
-                <p class="text-sm text-on-surface-variant line-clamp-1">${r.description}</p>
+                <h4 class="font-headline font-bold text-on-surface">\${r.category} Hazard</h4>
+                <p class="text-sm text-on-surface-variant line-clamp-1">\${r.description}</p>
                 <div class="mt-2 flex items-center justify-between text-[10px] font-bold text-secondary uppercase">
-                    <span>${r.reporter}</span>
-                    <span>${r.time}</span>
+                    <span>\${r.reporter}</span>
+                    <span>\${r.time}</span>
                 </div>
-            `;
+            \`;
             queue.appendChild(item);
         });
     }
@@ -1340,11 +1353,19 @@
 
     function selectCase(report) {
         selectedCaseId = report.id;
-        document.getElementById('reporter-name-display').innerText = report.reporter;
-        document.getElementById('reporter-email-display').innerText = report.reporterEmail;
-        document.querySelector('#view-admin h3.font-headline.text-2xl').innerText = `Case Details: #${report.id}`;
-        document.querySelector('#view-admin p.text-on-surface-variant.text-sm').innerText = `${report.category} Hazard`;
-        document.querySelector('#view-admin div.bg-surface-container-low.p-4.rounded-xl.h-full.border-l-2').innerText = report.description;
+        document.getElementById('reporter-name-display').innerText = report.reporter || "Anonymous";
+        document.getElementById('reporter-email-display').innerText = report.reporterEmail || "Hidden from wall";
+        document.getElementById('admin-case-title').innerText = \`Case Details: #\${report.id}\`;
+        document.getElementById('admin-case-subtitle').innerText = \`\${report.category} Hazard\`;
+        document.getElementById('admin-case-description').innerText = report.description;
+        
+        // Update photo
+        const photoContainer = document.getElementById('admin-photo-container');
+        if (report.image) {
+            photoContainer.innerHTML = \`<img src="\${report.image}" class="w-full h-full object-cover" />\`;
+        } else {
+            photoContainer.innerHTML = \`<span class="material-symbols-outlined text-4xl text-slate-400">image</span>\`;
+        }
     }
 
     function resolveSelectedCase() {
@@ -1366,8 +1387,10 @@
         selectedCaseId = null;
         document.getElementById('reporter-name-display').innerText = "Awaiting Selection";
         document.getElementById('reporter-email-display').innerText = "Click a case in the queue";
-        document.querySelector('#view-admin h3.font-headline.text-2xl').innerText = "Case Details";
-        document.querySelector('#view-admin div.bg-surface-container-low.p-4.rounded-xl.h-full.border-l-2').innerText = "Select a case to view details.";
+        document.getElementById('admin-case-title').innerText = "Case Details";
+        document.getElementById('admin-case-subtitle').innerText = "Select a case to view details.";
+        document.getElementById('admin-case-description').innerText = "Select a case to view descriptions.";
+        document.getElementById('admin-photo-container').innerHTML = \`<span class="material-symbols-outlined text-4xl text-slate-400">image</span>\`;
 
         alert("Case resolved and moved to resolution database!");
     }
