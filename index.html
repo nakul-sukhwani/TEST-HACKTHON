@@ -882,11 +882,11 @@
         const apiKey = "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";
         
         const categoryDescriptions = {
-            "Hygiene": "a washroom, toilet, bathroom, dirty floor, broken tap, unclean surfaces, sewage, mold, or sanitation issue",
-            "Food": "canteen food, mess hall, kitchen, spoiled or contaminated food, unhygienic cooking area, or dining issue",
-            "Water": "a water tap, water cooler, water tank, leaking pipe, no water supply, dirty water, or drainage problem",
-            "Other": "campus infrastructure damage, broken furniture, electrical hazard, construction debris, or safety hazard",
-            "General": "any campus facility issue or maintenance concern"
+            "Hygiene": "a washroom, toilet, bathroom, dirty floor, broken tap, unclean surfaces, sewage, mold, sanitation issue, cleaning supplies, soap, trash, garbage, waste, or any hygiene-related concern",
+            "Food": "any food item, fruit, vegetable, meal, snack, drink, beverage, canteen, mess hall, kitchen, cooking area, dining area, plate, utensil, food packaging, spoiled food, contaminated food, or anything food-related",
+            "Water": "a water tap, water cooler, water tank, water bottle, leaking pipe, no water supply, dirty water, drainage problem, puddle, flooding, or any water-related issue",
+            "Other": "campus infrastructure, building damage, broken furniture, electrical hazard, construction debris, safety hazard, road damage, lighting issue, or any general campus issue",
+            "General": "any campus facility issue, maintenance concern, or environment problem"
         };
         const expected = categoryDescriptions[category] || categoryDescriptions["General"];
 
@@ -909,7 +909,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": `You are a strict image validator for a campus safety app. The user selected complaint category: "${category}". Expected content: ${expected}.\n\nLook at this image VERY carefully. What do you ACTUALLY see in it?\n\nRules:\n- If you see math notes, homework, selfies, memes, cartoons, landscapes, animals, or ANYTHING unrelated to "${category}" then REJECT it.\n- Only approve if the image CLEARLY shows something related to ${expected}.\n- Be VERY strict. When in doubt, reject.\n\nReply with ONLY this JSON: {"match": true_or_false, "detected": "what you actually see in one sentence", "confidence": number_0_to_100}`
+                                "text": `You are an image validator for a campus safety reporting app. The user selected the complaint category: "${category}". Expected content includes: ${expected}.\n\nLook at the image and determine what it shows.\n\nRules:\n- APPROVE if the image shows ANYTHING reasonably related to the "${category}" category. Be lenient — real-world photos may not look perfect.\n- For "Food" category: approve ANY image showing food items, fruits, vegetables, meals, drinks, kitchen areas, dining areas, or food-related objects.\n- For "Hygiene" category: approve ANY image showing washrooms, cleaning issues, trash, dirty areas, or sanitation concerns.\n- For "Water" category: approve ANY image showing water, taps, pipes, tanks, flooding, or water-related issues.\n- Only REJECT if the image is CLEARLY and OBVIOUSLY unrelated (e.g., a selfie, meme, cartoon, screenshot of text, or landscape photo with no relevance).\n- When in doubt, APPROVE.\n\nReply with ONLY this JSON: {"match": true_or_false, "detected": "what you actually see in one sentence", "confidence": number_0_to_100}`
                             },
                             {
                                 "type": "image_url",
@@ -940,9 +940,9 @@
             return { relevant: isPositive, confidence: isPositive ? 80 : 10, reason: text.substring(0, 100), model: "vision" };
 
         } catch(visionError) {
-            console.warn("Vision model unavailable, falling back to strict rejection:", visionError);
-            // FALLBACK: Default to REJECT since we cannot see the image
-            return { relevant: false, confidence: 10, reason: "Vision AI could not verify image content matches '" + category + "'. Please ensure you upload a photo directly related to your complaint.", model: "fallback" };
+            console.warn("Vision model unavailable, allowing image through:", visionError);
+            // FALLBACK: Allow through with warning — don't block real reports because AI is offline
+            return { relevant: true, confidence: 50, reason: "Vision AI unavailable — image accepted for manual review.", model: "fallback" };
         }
     }
 
