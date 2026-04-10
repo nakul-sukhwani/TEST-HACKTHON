@@ -1083,19 +1083,19 @@
                 statusClass = 'bg-primary-fixed text-on-primary-fixed-variant';
             }
             
-            item.innerHTML = \`
-                <div class="w-12 h-12 rounded-xl \${colorClass} flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined">\${icon}</span>
+            item.innerHTML = `
+                <div class="w-12 h-12 rounded-xl ${colorClass} flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined">${icon}</span>
                 </div>
                 <div class="flex-grow">
                     <div class="flex items-center justify-between">
-                        <h6 class="font-bold text-slate-800">\${r.category} Issue</h6>
-                        <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">\${r.time}</span>
+                        <h6 class="font-bold text-slate-800">${r.category} Issue</h6>
+                        <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">${r.time}</span>
                     </div>
-                    <p class="text-sm text-slate-500 truncate max-w-sm">\${r.description}</p>
+                    <p class="text-sm text-slate-500 truncate max-w-sm">${r.description}</p>
                 </div>
-                <div class="px-3 py-1 \${statusClass} rounded-full text-[10px] font-black uppercase tracking-tight">\${status}</div>
-            \`;
+                <div class="px-3 py-1 ${statusClass} rounded-full text-[10px] font-black uppercase tracking-tight">${status}</div>
+            `;
             list.appendChild(item);
         });
     }
@@ -1316,18 +1316,18 @@
             const item = document.createElement('div');
             item.className = "bg-surface-container-low rounded-xl p-4 cursor-pointer border hover:border-primary/30 transition-colors animate-[fadeIn_0.3s]";
             item.onclick = () => selectCase(r);
-            item.innerHTML = \`
+            item.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
-                    <span class="\${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-bold px-2 py-0.5 rounded uppercase">\${r.severity}</span>
-                    <span class="text-[10px] font-mono text-secondary">#\${r.id}</span>
+                    <span class="${r.severity === 'CRITICAL' ? 'bg-tertiary text-white' : 'bg-primary-fixed text-primary'} text-[10px] font-bold px-2 py-0.5 rounded uppercase">${r.severity}</span>
+                    <span class="text-[10px] font-mono text-secondary">#${r.id}</span>
                 </div>
-                <h4 class="font-headline font-bold text-on-surface">\${r.category} Hazard</h4>
-                <p class="text-sm text-on-surface-variant line-clamp-1">\${r.description}</p>
+                <h4 class="font-headline font-bold text-on-surface">${r.category} Hazard</h4>
+                <p class="text-sm text-on-surface-variant line-clamp-1">${r.description}</p>
                 <div class="mt-2 flex items-center justify-between text-[10px] font-bold text-secondary uppercase">
-                    <span>\${r.reporter}</span>
-                    <span>\${r.time}</span>
+                    <span>${r.reporter}</span>
+                    <span>${r.time}</span>
                 </div>
-            \`;
+            `;
             queue.appendChild(item);
         });
     }
@@ -1339,16 +1339,16 @@
         selectedCaseId = report.id;
         document.getElementById('reporter-name-display').innerText = report.reporter || "Anonymous";
         document.getElementById('reporter-email-display').innerText = report.reporterEmail || "Hidden from wall";
-        document.getElementById('admin-case-title').innerText = \`Case Details: #\${report.id}\`;
-        document.getElementById('admin-case-subtitle').innerText = \`\${report.category} Hazard\`;
+        document.getElementById('admin-case-title').innerText = `Case Details: #${report.id}`;
+        document.getElementById('admin-case-subtitle').innerText = `${report.category} Hazard`;
         document.getElementById('admin-case-description').innerText = report.description;
         
         // Update photo
         const photoContainer = document.getElementById('admin-photo-container');
         if (report.image) {
-            photoContainer.innerHTML = \`<img src="\${report.image}" class="w-full h-full object-cover" />\`;
+            photoContainer.innerHTML = `<img src="${report.image}" class="w-full h-full object-cover" />`;
         } else {
-            photoContainer.innerHTML = \`<span class="material-symbols-outlined text-4xl text-slate-400">image</span>\`;
+            photoContainer.innerHTML = `<span class="material-symbols-outlined text-4xl text-slate-400">image</span>`;
         }
     }
 
@@ -1374,7 +1374,7 @@
         document.getElementById('admin-case-title').innerText = "Case Details";
         document.getElementById('admin-case-subtitle').innerText = "Select a case to view details.";
         document.getElementById('admin-case-description').innerText = "Select a case to view descriptions.";
-        document.getElementById('admin-photo-container').innerHTML = \`<span class="material-symbols-outlined text-4xl text-slate-400">image</span>\`;
+        document.getElementById('admin-photo-container').innerHTML = `<span class="material-symbols-outlined text-4xl text-slate-400">image</span>`;
 
         alert("Case resolved and moved to resolution database!");
     }
