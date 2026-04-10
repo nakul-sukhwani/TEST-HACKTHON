@@ -839,9 +839,9 @@
             const img = new Image();
             img.onload = function() {
                 const ratio = img.width / img.height;
-                const isSquare = Math.abs(ratio - 1) < 0.05;         // 1:1 = social media crop
-                const is16x9 = Math.abs(ratio - 1.778) < 0.05;      // 16:9 = screenshots/wallpapers
-                const isPixelArt = (img.width <= 512 && img.height <= 512); // Pixel art / AI thumbnails
+                const isSquare = Math.abs(ratio - 1) < 0.05;
+                const is16x9 = Math.abs(ratio - 1.778) < 0.05;
+                const isPixelArt = (img.width <= 512 && img.height <= 512);
                 
                 let flags = [];
                 if(isSquare) flags.push("Perfect 1:1 ratio (social media crop)");
@@ -853,6 +853,57 @@
                     height: img.height,
                     suspicious: flags.length > 0,
                     flags: flags
+                });
+            };
+            img.src = dataUrl;
+        });
+    }
+
+    // === LAYER 2B: Blur Detection (Laplacian Variance) ===
+    function detectBlur(dataUrl) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const size = 128; // Downsample for fast analysis
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, size, size);
+                const data = ctx.getImageData(0, 0, size, size).data;
+                
+                // Convert to grayscale and compute Laplacian variance
+                const gray = [];
+                for (let i = 0; i < data.length; i += 4) {
+                    gray.push(0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]);
+                }
+                
+                let laplacianSum = 0;
+                let count = 0;
+                for (let y = 1; y < size - 1; y++) {
+                    for (let x = 1; x < size - 1; x++) {
+                        const idx = y * size + x;
+                        const lap = gray[idx-1] + gray[idx+1] + gray[idx-size] + gray[idx+size] - 4*gray[idx];
+                        laplacianSum += lap * lap;
+                        count++;
+                    }
+                }
+                const variance = laplacianSum / count;
+                
+                // Also check if image is mostly solid color
+                let minVal = 255, maxVal = 0;
+                for (let i = 0; i < gray.length; i++) {
+                    if (gray[i] < minVal) minVal = gray[i];
+                    if (gray[i] > maxVal) maxVal = gray[i];
+                }
+                const dynamicRange = maxVal - minVal;
+                const isSolidColor = dynamicRange < 15; // Almost no variation = blank or solid-color image
+                
+                resolve({
+                    variance: Math.round(variance),
+                    isBlurry: variance < 50,       // Very blurry threshold
+                    isSolidColor: isSolidColor,
+                    dynamicRange: Math.round(dynamicRange)
                 });
             };
             img.src = dataUrl;
@@ -909,7 +960,7 @@
                         "content": [
                             {
                                 "type": "text",
-                                "text": `You are an image validator for a campus safety reporting app. The user selected the complaint category: "${category}". Expected content includes: ${expected}.\n\nLook at the image and determine what it shows.\n\nRules:\n- APPROVE if the image shows ANYTHING reasonably related to the "${category}" category. Be lenient — real-world photos may not look perfect.\n- For "Food" category: approve ANY image showing food items, fruits, vegetables, meals, drinks, kitchen areas, dining areas, or food-related objects.\n- For "Hygiene" category: approve ANY image showing washrooms, cleaning issues, trash, dirty areas, or sanitation concerns.\n- For "Water" category: approve ANY image showing water, taps, pipes, tanks, flooding, or water-related issues.\n- Only REJECT if the image is CLEARLY and OBVIOUSLY unrelated (e.g., a selfie, meme, cartoon, screenshot of text, or landscape photo with no relevance).\n- When in doubt, APPROVE.\n\nReply with ONLY this JSON: {"match": true_or_false, "detected": "what you actually see in one sentence", "confidence": number_0_to_100}`
+                                "text": `You are an image validator for a campus safety reporting app. The user selected the complaint category: "${category}". Expected content includes: ${expected}.\n\nLook at the image and determine what it shows.\n\nSAFETY RULES (HIGHEST PRIORITY):\n- IMMEDIATELY REJECT any image containing nudity, explicit content, sexual content, gore, violence, hate symbols, or any NSFW material. Set "unsafe": true in the response.\n- IMMEDIATELY REJECT any image that is intentionally blurred, corrupted, or unrecognizable junk content. Set "unsafe": true.\n\nCATEGORY RULES:\n- APPROVE if the image shows ANYTHING reasonably related to the "${category}" category. Be lenient for legitimate reports.\n- For "Food" category: approve ANY image showing food items, fruits, vegetables, meals, drinks, kitchen areas, dining areas, or food-related objects.\n- For "Hygiene" category: approve ANY image showing washrooms, cleaning issues, trash, dirty areas, or sanitation concerns.\n- For "Water" category: approve ANY image showing water, taps, pipes, tanks, flooding, or water-related issues.\n- Only REJECT if the image is CLEARLY and OBVIOUSLY unrelated (e.g., a selfie, meme, cartoon, screenshot of text, or landscape photo with no relevance).\n- When in doubt about category relevance, APPROVE.\n\nReply with ONLY this JSON: {"match": true_or_false, "unsafe": true_or_false, "detected": "what you actually see in one sentence", "confidence": number_0_to_100}`
                             },
                             {
                                 "type": "image_url",
@@ -930,14 +981,16 @@
             if(jsonMatch) {
                 const parsed = JSON.parse(jsonMatch[0]);
                 return {
-                    relevant: parsed.match === true,
+                    relevant: parsed.match === true && !parsed.unsafe,
+                    unsafe: parsed.unsafe === true,
                     confidence: parsed.confidence || 0,
                     reason: parsed.detected || "Unknown content",
                     model: "vision"
                 };
             }
             const isPositive = text.toLowerCase().includes('"match": true') || text.toLowerCase().includes("approved");
-            return { relevant: isPositive, confidence: isPositive ? 80 : 10, reason: text.substring(0, 100), model: "vision" };
+            const isUnsafe = text.toLowerCase().includes('"unsafe": true') || text.toLowerCase().includes('nsfw') || text.toLowerCase().includes('nudity');
+            return { relevant: isPositive && !isUnsafe, unsafe: isUnsafe, confidence: isPositive ? 80 : 10, reason: text.substring(0, 100), model: "vision" };
 
         } catch(visionError) {
             console.warn("Vision model unavailable, allowing image through:", visionError);
@@ -967,31 +1020,57 @@
             const statusText = document.getElementById('upload-status-text');
             let rejectionReason = null;
 
+            // --- LAYER 0: Basic file size check ---
+            if (file.size < 5000) { // < 5KB is likely corrupt or a placeholder
+                scanEl.classList.add('hidden');
+                statusDiv.classList.remove('hidden');
+                imageUploaded = false;
+                statusText.className = "text-[10px] font-bold flex items-center gap-1 text-red-600 leading-relaxed";
+                statusText.innerHTML = `<span class='material-symbols-outlined text-[16px] text-red-500'>gpp_bad</span> <span>REJECTED: File too small (${(file.size/1024).toFixed(1)}KB). Please upload a real photo.</span>`;
+                return;
+            }
+
             // --- LAYER 1: EXIF Metadata ---
-            scanText.innerText = "Layer 1/3: Scanning EXIF metadata for camera origin...";
+            scanText.innerText = "Layer 1/4: Scanning EXIF metadata for camera origin...";
             const exif = await checkExifData(file);
-            await new Promise(r => setTimeout(r, 1200));
-
-            // --- LAYER 2: Image Properties ---
-            scanText.innerText = "Layer 2/3: Analyzing dimensions & pixel patterns...";
-            const props = await analyzeImageProperties(uploadedImageDataUrl);
-            await new Promise(r => setTimeout(r, 1000));
-
-            // --- LAYER 3: NVIDIA Vision AI — Image Content Analysis ---
-            scanText.innerText = `Layer 3/3: NVIDIA Vision analyzing image content for "${currentCategory}"...`;
-            const relevance = await checkCategoryRelevance(currentCategory, uploadedImageDataUrl);
             await new Promise(r => setTimeout(r, 800));
 
-            // === DECISION ENGINE: Vision AI Priority ===
+            // --- LAYER 2: Image Properties ---
+            scanText.innerText = "Layer 2/4: Analyzing dimensions & pixel patterns...";
+            const props = await analyzeImageProperties(uploadedImageDataUrl);
+            await new Promise(r => setTimeout(r, 600));
+
+            // --- LAYER 2B: Blur + Quality Detection ---
+            scanText.innerText = "Layer 2/4: Running blur & quality analysis...";
+            const blurResult = await detectBlur(uploadedImageDataUrl);
+            await new Promise(r => setTimeout(r, 600));
+
+            // Reject solid-color / blank images
+            if (blurResult.isSolidColor) {
+                rejectionReason = "Image appears to be a blank or solid-color image. Upload a real photo of the issue.";
+            }
+            // Reject extremely blurry images
+            if (!rejectionReason && blurResult.isBlurry) {
+                rejectionReason = `Image is too blurry to verify (sharpness score: ${blurResult.variance}/50 minimum). Please take a clearer photo.`;
+            }
+
+            // --- LAYER 3: NVIDIA Vision AI — Content + Safety Analysis ---
+            if (!rejectionReason) {
+                scanText.innerText = `Layer 3/4: NVIDIA Vision scanning for safety & content match...`;
+                const relevance = await checkCategoryRelevance(currentCategory, uploadedImageDataUrl);
+                await new Promise(r => setTimeout(r, 800));
+
+                // Check for NSFW/explicit content (highest priority rejection)
+                if (relevance.unsafe) {
+                    rejectionReason = `⚠️ CONTENT BLOCKED: Inappropriate/explicit content detected. This report has been flagged. Repeated violations may result in account suspension.`;
+                } else if (!relevance.relevant) {
+                    rejectionReason = `AI detected: "${relevance.reason}". This does not match the "${currentCategory}" category. Please upload an appropriate photo.`;
+                }
+            }
+
+            // === FINAL VERDICT ===
             scanEl.classList.add('hidden');
             statusDiv.classList.remove('hidden');
-
-            // WebRTC captures and Web images strip EXIF/change dimensions.
-            // We now rely purely on the Vision AI to determine if the content is correct.
-            if (!relevance.relevant) {
-                // If the user uploaded a photo of themselves, the AI will accurately tell them that.
-                rejectionReason = `AI detected: "${relevance.reason}". This does not match the "${currentCategory}" category. Please upload an appropriate photo.`;
-            }
 
             if(rejectionReason) {
                 imageUploaded = false;
@@ -1000,7 +1079,7 @@
             } else {
                 imageUploaded = true;
                 statusText.className = "text-[10px] font-bold flex items-center gap-1 text-green-600 leading-relaxed";
-                statusText.innerHTML = `<span class='material-symbols-outlined text-[14px]'>verified</span> Authenticity Verified — EXIF: ${exif.hasExif ? '✓' : '—'} | Dimensions: ${props.width}×${props.height} | Category Match: ${relevance.confidence}% | File: ${(file.size/1024).toFixed(0)}KB`;
+                statusText.innerHTML = `<span class='material-symbols-outlined text-[14px]'>verified</span> Authenticity Verified — EXIF: ${exif.hasExif ? '✓' : '—'} | Sharpness: ${blurResult.variance} | Dimensions: ${props.width}×${props.height} | File: ${(file.size/1024).toFixed(0)}KB`;
             }
         };
         reader.readAsDataURL(file);
